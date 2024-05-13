@@ -1,2 +1,2 @@
 # Diff_UV
-A differentiable Underwater vehicles with actuation (thrusters, moving weights, spinning rotors and control surfaces) in all DOFs can control the position and attitude in 6 DOFs
+A differentiable Underwater vehicles dynamic model with actuation in all DOFs and can control the position and attitude in 6 DOFs
