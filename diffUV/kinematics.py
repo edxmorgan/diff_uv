@@ -2,9 +2,9 @@
 """
 from diffUV.base import Base
 
-class Dynamics(Base):
+class Kinematics(Base):
     def __init__(self):
         pass
 
     def __repr__(self) -> str:
-        return f'{super().__repr__()} Dynamics'
+        return f'{super().__repr__()} Kinematics'
