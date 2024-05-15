@@ -2,7 +2,7 @@
 """
 from diffUV.base import Base
 from casadi import SX, horzcat, sin,cos
-from diffUV.geometry.symbol import *
+from diffUV.utils.symbol import *
 
 class Dynamics(Base):
     def __init__(self):

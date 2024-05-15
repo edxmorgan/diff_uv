@@ -1,8 +1,8 @@
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
 from diffUV.base import Base
-from diffUV.geometry import transformation_matrix as Tm
-from diffUV.geometry.symbol import *
+from diffUV.utils import transformation_matrix as Tm
+from diffUV.utils.symbol import *
 
 class Kinematics(Base):
     def __init__(self):
