@@ -1,17 +1,38 @@
-from casadi import SX,  vertcat
+from casadi import SX,  vertcat, DM
+
+eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
+q = [eta,eps1,eps2,eps3] #unit quaternion
 
 # 6 DOF states vectors
 u = SX.sym('u')
+du = SX.sym('du')
 v = SX.sym('v')
+dv = SX.sym('dv')
 w = SX.sym('w')
+dw = SX.sym('dw')
 v_nb = vertcat(u, v, w)  # body-fixed linear velocity
+dv_nb = vertcat(du, dv, dw)
 
 p = SX.sym('p')
+dp = SX.sym('dp')
 q = SX.sym('q')
+dq = SX.sym('dq')
 r = SX.sym('r')
+dr = SX.sym('dr')
 w_nb = vertcat(p, q, r)  # body-fixed angular velocity
+dw_nb = vertcat(dp, dq, dr)
 
 x_nb = vertcat(v_nb, w_nb)
+dx_nb = vertcat(dv_nb, dw_nb)
+
+
+
+W = SX.sym('W')  # weight
+B = SX.sym('B')  # buoyancy
+
+thet = SX.sym('thet')
+phi = SX.sym('phi')
+psi = SX.sym('psi')
 
 m = SX.sym('m')  # Mass
 
@@ -71,3 +92,13 @@ N_dw = SX.sym('N_dw') # coupled Added mass in yaw & heave
 N_dp = SX.sym('N_dp') # coupled Added mass in yaw & roll
 N_dq = SX.sym('N_dq') # coupled Added mass in yaw & pitch
 N_dr = SX.sym('N_dr') # Added mass in yaw
+
+
+# Starboard–port symmetrical underwater vehicles config
+star_board_config = DM([[1, 0, 1, 0, 1, 0],
+           [0, 1, 0, 1, 0, 1],
+           [1, 0, 1, 0, 1, 0],
+           [0, 1, 0, 1, 0, 1],
+           [1, 0, 1, 0, 1, 0],
+           [0, 1, 0, 1, 0, 1]
+           ])
