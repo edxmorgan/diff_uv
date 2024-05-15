@@ -2,8 +2,8 @@
 """
 import casadi as cs
 from platform import machine, system
-import diffUV.geometry.operators as ops
-import diffUV.geometry.transformation_matrix as T
+import diffUV.utils.operators as ops
+import diffUV.utils.transformation_matrix as T
 
 
 class Base(object):
