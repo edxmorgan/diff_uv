@@ -17,7 +17,7 @@ class Dynamics(object):
             # NOTE: use_jit=True requires that CasADi is built with Clang
             for k, v in self.jit_func_opts.items():
                 self.func_opts[k] = v
-    
+
     def construct_vars(self):
         # 6 DOF states vectors
         u = SX.sym('u')
