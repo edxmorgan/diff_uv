@@ -22,4 +22,4 @@ class Base(object):
                 self.func_opts[k] = v
 
     def __repr__(self) -> str:
-        return "differentiable underwater dynamics"
+        return "differentiable underwater"
