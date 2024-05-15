@@ -3,6 +3,7 @@
 from diffUV.base import Base
 from casadi import SX, horzcat, sin,cos
 from diffUV.utils.symbol import *
+from diffUV.utils.operators import *
 
 class Dynamics(Base):
     def __init__(self):
@@ -11,7 +12,7 @@ class Dynamics(Base):
     def __repr__(self) -> str:
         return f'{super().__repr__()} Dynamics'
 
-    def general_uv_inertia_matrix(self):
+    def internal_uv_inertia_matrix(self):
         self._M = SX(6, 6)
         self._M[0, :] = horzcat(m - X_du, -X_dv, -X_dw, -X_dp, m*z_g - X_dq, -m*y_g - X_dr)
         self._M[1, :] = horzcat(-X_dv, m-Y_dv, -Y_dw, -m*z_g-Y_dp, -Y_dq, m*x_g - Y_dr)
@@ -20,10 +21,22 @@ class Dynamics(Base):
         self._M[4, :] = horzcat(m*z_g - X_dq, -Y_dq, -m*x_g - Z_dq, -I_yx - K_dq, I_y - M_dq, -I_zy - M_dr)
         self._M[5, :] = horzcat(-m*y_g - X_dr, m*x_g - Y_dr, -Z_dr, -I_zx - K_dr, -I_zy - M_dr, I_z - N_dr)
     
-    def UV_inertia_matrix(self):
-        self.general_uv_inertia_matrix()
+    def inertia_matrix(self):
+        self.internal_uv_inertia_matrix()
         M = self._M*star_board_config
         return M
+    
+    def coriolis_centripetal_matrix(self):
+        M = self.uv_inertia_matrix()
+        M11 = M[:3,:3]
+        M12 = M[:3,3:]
+        M21 = M[3:,:3]
+        M22 = M[3:,3:]
+        C = SX.zeros(6, 6)
+        C[3:,:3] = -cross_product(M11@v_nb + M12@w_nb)
+        C[:3,3:] = -cross_product(M11@v_nb + M12@w_nb)
+        C[3:,3:] = -cross_product(M21@v_nb + M22@w_nb)
+        return C 
 
     def gvect(self):
         # Hydrostatics of Submerged Vehicles
