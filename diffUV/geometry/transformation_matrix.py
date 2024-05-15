@@ -13,7 +13,7 @@ def linear_vel_R(phi, thet, psi):
     R[2,2] = cos(thet)*cos(phi)
     return R
 
-def inverse_linear_vel_R(phi, thet, psi):
+def inv_linear_vel_R(phi, thet, psi):
     R = linear_vel_R(phi, thet, psi)
     return R.T
 
@@ -28,7 +28,7 @@ def angular_vel_T(phi, thet):
     T[2,2] = cos(phi)/cos(thet)
     return T
 
-def inverse_angular_vel_T(phi, thet):
+def inv_angular_vel_T(phi, thet):
     T_1 = SX.eye(3)
     T_1[0,2] = -sin(thet)
     T_1[1,1] = cos(phi)
@@ -50,3 +50,11 @@ def J_kin(phi, thet, psi):
     J[:3,:3] = R
     J[3:,3:] = T
     return J,R,T
+
+def inv_J_kin(phi, thet, psi):
+    RT = inv_linear_vel_R(phi, thet, psi)
+    inv_T = inv_angular_vel_T(phi, thet)
+    inv_J = SX.zeros(6, 6)
+    inv_J[:3,:3] = RT
+    inv_J[3:,3:] = inv_T
+    return inv_J ,RT ,inv_T

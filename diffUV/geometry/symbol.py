@@ -3,7 +3,7 @@ from casadi import SX,  vertcat, DM
 eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
 q = [eta,eps1,eps2,eps3] #unit quaternion
 
-# 6 DOF states vectors
+# 6 DOF states vectors in body-fixed
 u = SX.sym('u')
 du = SX.sym('du')
 v = SX.sym('v')
@@ -24,15 +24,46 @@ dw_nb = vertcat(dp, dq, dr)
 
 x_nb = vertcat(v_nb, w_nb)
 dx_nb = vertcat(dv_nb, dw_nb)
+################################################
 
+# 6 DOF states vectors in NED
+x = SX.sym('x')
+dx = SX.sym('dx')
+ddx = SX.sym('ddx')
+y = SX.sym('y')
+dy = SX.sym('dy')
+ddy = SX.sym('ddy')
+z = SX.sym('z')
+dz = SX.sym('dz')
+ddz = SX.sym('ddz')
+p_n = vertcat(x, y, z)  # NED linear velocity
+dp_n = vertcat(dx, dy, dz)
+ddp_n = vertcat(ddx, ddy, ddz)
+
+
+thet = SX.sym('thet')
+dthet = SX.sym('dthet')
+ddthet = SX.sym('ddthet')
+phi = SX.sym('phi')
+dphi = SX.sym('dphi')
+ddphi = SX.sym('ddphi')
+psi = SX.sym('psi')
+dpsi = SX.sym('dpsi')
+ddpsi = SX.sym('ddpsi')
+
+eul = vertcat(thet, phi, psi)  # NED euler angular velocity
+deul = vertcat(dthet, dphi, dpsi)
+ddeul = vertcat(ddthet, ddphi, ddpsi)
+
+n = vertcat(p_n, eul)
+dn  = vertcat(dp_n, deul)
+ddn  = vertcat(ddp_n, ddeul)
+
+###################################################
 
 
 W = SX.sym('W')  # weight
 B = SX.sym('B')  # buoyancy
-
-thet = SX.sym('thet')
-phi = SX.sym('phi')
-psi = SX.sym('psi')
 
 m = SX.sym('m')  # Mass
 
