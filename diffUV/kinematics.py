@@ -18,12 +18,12 @@ class Kinematics(Base):
         return f'{super().__repr__()} Kinematics'
     
     def ned_vel(self):
-        dn = self.J@x_nb
-        return dn
+        _dn = self.J@x_nb
+        return _dn
 
     def ned_acc(self):
-        ddn = self.J@dx_nb + self.dJ@x_nb
-        return ddn
+        _ddn = self.J@dx_nb + self.dJ@x_nb
+        return _ddn
     
     def body_position(self):
         v = self.J_inv@dn
