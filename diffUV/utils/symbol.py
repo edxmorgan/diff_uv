@@ -150,8 +150,9 @@ Dn5 = SX.sym('Dn5',6,6) # nonlinear and coupled coefficient for pitch
 Dn6 = SX.sym('Dn6',6,6) # nonlinear and coupled coefficient for yaw
 
 ###################################################################
+tau = SX.sym('tau',6,1)
 
-
+###################################################################
 # Starboard–port symmetrical underwater vehicles config
 star_board_config = DM([[1, 0, 1, 0, 1, 0],
            [0, 1, 0, 1, 0, 1],

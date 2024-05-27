@@ -1,7 +1,7 @@
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
 from diffUV.base import Base
-from casadi import SX, horzcat, sin, cos, fabs
+from casadi import SX, horzcat, sin, cos, fabs, inv
 from diffUV.utils.symbol import *
 from diffUV.utils.operators import *
 
@@ -36,7 +36,7 @@ class Dynamics(Base):
         return M
 
     def coriolis_centripetal_matrix(self):
-        M = self.uv_inertia_matrix()
+        M = self.inertia_matrix()
         M11 = M[:3, :3]
         M12 = M[:3, 3:]
         M21 = M[3:, :3]
@@ -82,3 +82,8 @@ class Dynamics(Base):
 
         damping = linear_damping + nonlinear_damping
         return damping
+    
+    def forward_dynamics(self):
+        acc = inv(self.inertia_matrix())@(tau -self.coriolis_centripetal_matrix()@x_nb - self.gvect() -self.damping())
+        return acc
+    
