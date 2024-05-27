@@ -87,3 +87,6 @@ class Dynamics(Base):
         acc = inv(self.inertia_matrix())@(tau -self.coriolis_centripetal_matrix()@x_nb - self.gvect() -self.damping())
         return acc
     
+    def inverse_dynamics(self):
+        resultant_torque = self.inertia_matrix()@dx_nb + self.coriolis_centripetal_matrix()@x_nb + self.gvect() + self.damping()
+        return resultant_torque
