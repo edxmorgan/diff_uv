@@ -124,6 +124,33 @@ N_dp = SX.sym('N_dp') # coupled Added mass in yaw & roll
 N_dq = SX.sym('N_dq') # coupled Added mass in yaw & pitch
 N_dr = SX.sym('N_dr') # Added mass in yaw
 
+###################################################################
+
+X_u = SX.sym('X_u') # Drag coefficient in surge
+Y_v = SX.sym('Y_v') # Drag coefficient in sway
+Z_w = SX.sym('Z_w') # Drag coefficient in heave
+K_p = SX.sym('K_p') # Drag coefficient in roll
+M_q = SX.sym('M_q') # Drag coefficient in pitch
+N_r = SX.sym('N_r') # Drag coefficient in yaw
+
+K_v = SX.sym('K_v') # coupled Drag coefficient in sway & roll
+N_v = SX.sym('N_v') # coupled Drag coefficient in sway & yaw
+M_w = SX.sym('M_w') # coupled Drag coefficient in pitch & heave
+Y_p = SX.sym('Y_p') # coupled Drag coefficient in sway & roll
+N_p = SX.sym('N_p') # coupled Drag coefficient in roll & yaw
+Z_q = SX.sym('Z_q') # coupled Drag coefficient in heave & pitch
+Y_r = SX.sym('Y_r') # coupled Drag coefficient in sway & yaw
+K_r = SX.sym('K_r') # coupled Drag coefficient in roll & yaw
+
+Dn1 = SX.sym('Dn1',6,6) # nonlinear and coupled coefficient for surge
+Dn2 = SX.sym('Dn2',6,6) # nonlinear and coupled coefficient for sway
+Dn3 = SX.sym('Dn3',6,6) # nonlinear and coupled coefficient for heave
+Dn4 = SX.sym('Dn4',6,6) # nonlinear and coupled coefficient for roll
+Dn5 = SX.sym('Dn5',6,6) # nonlinear and coupled coefficient for pitch
+Dn6 = SX.sym('Dn6',6,6) # nonlinear and coupled coefficient for yaw
+
+###################################################################
+
 
 # Starboard–port symmetrical underwater vehicles config
 star_board_config = DM([[1, 0, 1, 0, 1, 0],
