@@ -1,21 +1,19 @@
-"""This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
-"""
+from casadi import SX, horzcat, inv, sin,cos, fabs
 from diffUV.base import Base
-from casadi import SX, horzcat, sin, cos, fabs, inv
 from diffUV.utils.symbol import *
-from diffUV.utils.operators import *
-
+from diffUV.utils.operators import cross_product
 
 class Dynamics(Base):
     def __init__(self):
-        pass
+        super().__init__()
+        self._M = None
 
     def __repr__(self) -> str:
+        """String representation of the Dynamics instance."""
         return f'{super().__repr__()} Dynamics'
 
-    def internal_uv_inertia_matrix(self):
-        # Inertia Matrix ROV & AUV
-        # _M = M_rb + M_A
+    def _initialize_inertia_matrix(self):
+        """Internal method to compute the UV inertia matrix based on vehicle parameters."""
         self._M = SX(6, 6)
         self._M[0, :] = horzcat(
             m - X_du, -X_dv, -X_dw, -X_dp, m*z_g - X_dq, -m*y_g - X_dr)
@@ -31,11 +29,14 @@ class Dynamics(Base):
                                 Y_dr, -Z_dr, -I_zx - K_dr, -I_zy - M_dr, I_z - N_dr)
 
     def inertia_matrix(self):
-        self.internal_uv_inertia_matrix()
-        M = self._M*star_board_config
-        return M
+        """Compute and return the UV inertia matrix with configuration adjustments."""
+        if self._M is None:
+            self._initialize_inertia_matrix()
+        return self._M * star_board_config
+
 
     def coriolis_centripetal_matrix(self):
+        """Compute and return the Coriolis and centripetal matrix based on current vehicle state."""
         M = self.inertia_matrix()
         M11 = M[:3, :3]
         M12 = M[:3, 3:]
@@ -46,10 +47,9 @@ class Dynamics(Base):
         C[:3, 3:] = -cross_product(M11@v_nb + M12@w_nb)
         C[3:, 3:] = -cross_product(M21@v_nb + M22@w_nb)
         return C
-
+    
     def gvect(self):
-        # Hydrostatics of Submerged Vehicles
-        # restoring forces
+        """Compute and return the hydrostatic restoring forces."""
         g = SX(6, 1)
         g[0, 0] = (W - B)*sin(thet)
         g[1, 0] = -(W - B)*cos(thet)*sin(phi)
@@ -64,9 +64,7 @@ class Dynamics(Base):
         return g
 
     def damping(self):
-        # the damping of an underwater vehicle moving in 6 DOF at high
-        # speed will be highly nonlinear and coupled.
-        # This could be described mathematically as
+        """Compute and return the total damping forces, including both linear and nonlinear components."""
         D = SX(6, 6)
         D[0, 0] = X_u
         D[1, 1] = Y_v
@@ -84,8 +82,8 @@ class Dynamics(Base):
         return damping
     
     def forward_dynamics(self):
-        acc = inv(self.inertia_matrix())@(tau -self.coriolis_centripetal_matrix()@x_nb - self.gvect() -self.damping())
-        return acc
+        body_acc = inv(self.inertia_matrix())@(tau -self.coriolis_centripetal_matrix()@x_nb - self.gvect() -self.damping())
+        return body_acc
     
     def inverse_dynamics(self):
         resultant_torque = self.inertia_matrix()@dx_nb + self.coriolis_centripetal_matrix()@x_nb + self.gvect() + self.damping()
