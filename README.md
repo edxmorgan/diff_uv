@@ -27,4 +27,4 @@ or can be managed altogether within the `diffUV` class.
 
 ## License
 
-The hydrodynamics library has been released under the MIT license.
+The Diff_UV library has been released under the MIT license.
