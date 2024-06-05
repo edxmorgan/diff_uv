@@ -1,4 +1,4 @@
-from casadi import SX, horzcat, inv, sin,cos, fabs
+from casadi import SX, horzcat, inv, sin,cos, fabs, Function
 from diffUV.base import Base
 from diffUV.utils.symbol import *
 from diffUV.utils.operators import cross_product
@@ -28,11 +28,13 @@ class Dynamics(Base):
         self._M[5, :] = horzcat(-m*y_g - X_dr, m*x_g -
                                 Y_dr, -Z_dr, -I_zx - K_dr, -I_zy - M_dr, I_z - N_dr)
 
-    def inertia_matrix(self):
+    def get_inertia_matrix(self):
         """Compute and return the UV inertia matrix with configuration adjustments."""
-        if self._M is None:
-            self._initialize_inertia_matrix()
-        return self._M * star_board_config
+        self._initialize_inertia_matrix()
+        # syms = [q] 
+        M = self._M * star_board_config
+        # M = Function("M", syms , [M], self.func_opts)
+        return M
 
 
     def coriolis_centripetal_matrix(self):
