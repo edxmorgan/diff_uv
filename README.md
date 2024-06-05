@@ -1,7 +1,7 @@
 # Diff_UV (Differentiable Underwater Vehicle System)
 A differentiable Underwater vehicles dynamic model with actuation in all DOFs and can control the position and attitude in 6 DOFs based on casadi operations.
 
-These various matrices 𝑀, 𝐶(𝜈) and 𝐷(𝜈), and vector 𝑔(𝜂) in the dynamics contain more than 300 unknown parameters in total. As a result, estimation of all
+The matrices 𝑀, 𝐶(𝜈) and 𝐷(𝜈), and vector 𝑔(𝜂) in the dynamics contain more than 300 unknown parameters in total. As a result, estimation of all
 parameters is infeasible. Yet, based on the features and operating speeds of the vehicle,
 several assumptions can be made to simplify the dynamic model and reduce the number of
 unknown parameters in the model. 
