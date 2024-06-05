@@ -9,15 +9,15 @@ unknown parameters in the model.
 The assumptions that have been made for the dynamics
 of a commond vehicle like the BlueROV2 Heavy are listed in the following:
 
-BlueROV2 Heavy operates at relative low speeds (i.e. less than 2 m/s), lift
+* BlueROV2 Heavy operates at relative low speeds (i.e. less than 2 m/s), lift
 forces can be neglected.
-2. BlueROV2 Heavy is assumed to have port-starboard symmetry and fore-aft
+* BlueROV2 Heavy is assumed to have port-starboard symmetry and fore-aft
 symmetry; and the centre of gravity (CG) is assumed to be located in the symmetry
 planes.
-3. BlueROV2 Heavy is assumed to be hydrodynamically symmetrical about 6-DoF.
+* BlueROV2 Heavy is assumed to be hydrodynamically symmetrical about 6-DoF.
 Accordingly, the motions between DoFs of the vehicle in hydrodynamic can be
 decoupled.
-4. BlueROV2 Heavy is assumed to operate below the wave-affected zone. As a result,
+* BlueROV2 Heavy is assumed to operate below the wave-affected zone. As a result,
 disturbances of waves on the vehicle are negligible.
 
 ## Installation
