@@ -7,7 +7,7 @@ several assumptions can be made to simplify the dynamic model and reduce the num
 unknown parameters in the model. 
 
 The assumptions that have been made for the dynamics
-of a commond vehicle like the BlueROV2 Heavy are listed in the following:
+of a common ligtweight vehicle(the BlueROV2 Heavy) are listed in the following:
 
 * BlueROV2 Heavy operates at relative low speeds (i.e. less than 2 m/s), lift
 forces can be neglected.
