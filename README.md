@@ -61,5 +61,8 @@ tau = uv_dyn.inverse_dynamics()
 ```
 
 ## License
-
 The Diff_UV library has been released under the MIT license.
+
+## References
+Fossen, T.I. (2011) Handbook of Marine Craft Hydrodynamics and Motion Control. John Wiley & Sons, Inc., Chichester, UK.
+https://doi.org/10.1002/9781119994138
