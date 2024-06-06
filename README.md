@@ -52,12 +52,20 @@ or can be managed altogether within the `diffUV` class.
 from diffUV import dyn, kin
 uv_dyn = dyn()
 
-inertia_mat = uv_dyn.get_inertia_matrix()
-coriolis_mat = uv_dyn.coriolis_centripetal_matrix()
-restoring_vec = uv_dyn.gvect()
-dampn_mat = uv_dyn.damping()
-accel = uv_dyn.forward_dynamics()
-tau = uv_dyn.inverse_dynamics()
+inertia_mat = uv_dyn.get_body_inertia_matrix()
+coriolis_mat = uv_dyn.coriolis_body_centripetal_matrix()
+restoring_vec = uv_dyn.gvect_body()
+dampn_mat = uv_dyn.damping_body()
+ned_accel = uv_dyn.forward_dynamics_ned()
+```
+### Extending with CasADi Capabilities
+All expressions obtained from the diffUV library methods (get_body_inertia_matrix(), coriolis_body_centripetal_matrix(), gvect_body, etc) are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
+
+### Symbolic Differentiation
+Utilize CasADi's automatic differentiation to compute derivatives:
+```python
+from casadi import jacobian
+accel_jacobian = jacobian(ned_accel, uv_dyn.state_vector)
 ```
 
 ## References

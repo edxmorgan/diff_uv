@@ -1,7 +1,11 @@
 from casadi import cos, SX, sin, tan, skew, inv
 
 def linear_vel_Rq(q):
-    eta,eps1,eps2,eps3 = q
+    eta = q[0]
+    eps1 = q[1]
+    eps2 = q[2]
+    eps3 = q[3]
+
     Rq = SX(3, 3)
     Rq[0,0] = 1 - 2*(eps2**2 + eps3**2)
     Rq[0,1] = 2*(eps1*eps2 - eps3*eta)
@@ -15,7 +19,11 @@ def linear_vel_Rq(q):
     return Rq
 
 def angular_vel_Tq(q):
-    eta,eps1,eps2,eps3 = q
+    eta = q[0]
+    eps1 = q[1]
+    eps2 = q[2]
+    eps3 = q[3]
+
     Tq = SX(4,3)
     Tq[0,0] = -eps1
     Tq[0,1] = -eps2
@@ -34,7 +42,7 @@ def angular_vel_Tq(q):
 def Jq_kin(q):
     Rq = linear_vel_Rq(q)
     Tq = angular_vel_Tq(q)
-    J = SX.zeros(6, 6)
+    J = SX.zeros(7, 6)
     J[:3,:3] = Rq
     J[3:,3:] = Tq
     return J, Rq, Tq
@@ -42,7 +50,7 @@ def Jq_kin(q):
 def inv_Jq_kin(q):
     Rq = linear_vel_Rq(q)
     Tq = angular_vel_Tq(q)
-    J = SX.zeros(6, 6)
+    J = SX.zeros(6, 7)
     J[:3,:3] = Rq.T
     J[3:,3:] = 4*Tq.T
     return J, Rq.T, 4*Tq.T
