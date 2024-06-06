@@ -48,6 +48,10 @@ for hydrodynamics. The hydrodynamic terms implemented include:
 Each of the aforementioned terms provide their own distinct data class for independent use
 or can be managed altogether within the `diffUV` class. 
 
+```python
+import diffUV
+```
+
 ## License
 
 The Diff_UV library has been released under the MIT license.
