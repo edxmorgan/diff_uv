@@ -51,6 +51,7 @@ or can be managed altogether within the `diffUV` class.
 ```python
 from diffUV import dyn, kin
 uv_dyn = dyn()
+
 inertia_mat = uv_dyn.get_inertia_matrix()
 coriolis_mat = uv_dyn.coriolis_centripetal_matrix()
 restoring_vec =uv_dyn.gvect()
