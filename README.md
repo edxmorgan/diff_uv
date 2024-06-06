@@ -2,9 +2,7 @@
 A differentiable Underwater vehicles dynamic model with actuation in all DOFs and can control the position and attitude in 6 DOFs based on casadi operations.
 
 <!-- ![alt text]() -->
-<div style="text-align: center;">
-    <img src="./examples/BlueRobotics%202018b.png" width="420"/>
-</div>
+<img src="./examples/BlueRobotics%202018b.png" width="420"/>
 
 The matrices 𝑀, 𝐶(𝜈) and 𝐷(𝜈), and vector 𝑔(𝜂) in the dynamics contain more than 300 unknown parameters in total. As a result, estimation of all
 parameters is infeasible. Yet, based on the features and operating speeds of the vehicle,
