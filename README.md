@@ -54,8 +54,10 @@ uv_dyn = dyn()
 
 inertia_mat = uv_dyn.get_inertia_matrix()
 coriolis_mat = uv_dyn.coriolis_centripetal_matrix()
-restoring_vec =uv_dyn.gvect()
-dampn_mat =uv_dyn.damping()
+restoring_vec = uv_dyn.gvect()
+dampn_mat = uv_dyn.damping()
+accel = uv_dyn.forward_dynamics()
+tau = uv_dyn.inverse_dynamics()
 ```
 
 ## License
