@@ -1,4 +1,4 @@
-from casadi import SX, horzcat, inv, sin,cos, fabs, Function
+from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv
 from diffUV.base import Base
 from diffUV.utils.symbol import *
 from diffUV.utils.operators import cross_product
@@ -39,7 +39,7 @@ class Dynamics(Base):
 
     def coriolis_centripetal_matrix(self):
         """Compute and return the Coriolis and centripetal matrix based on current vehicle state."""
-        M = self.inertia_matrix()
+        M = self.get_inertia_matrix()
         M11 = M[:3, :3]
         M12 = M[:3, 3:]
         M21 = M[3:, :3]
@@ -64,29 +64,36 @@ class Dynamics(Base):
             sin(phi) - (y_g*W - y_b*B)*sin(thet)
         # For neutrally buoyant vehicles W = B
         return g
+    
+    def gvect_quat(self):
+        """Compute and return the hydrostatic restoring forces using quaternions."""
+        g_quat = SX(6, 1)
+        g_quat[0, 0] = (B-W)*(2*eps1*eps3 - 2*eps2*eta)
+        g_quat[1, 0] = (B-W)*(2*eps2*eps3 - 2*eps1*eta)
+        g_quat[2, 0] = (W-B)*(2*eps1**2 - 2*eps2**2 -1)
+        g_quat[3, 0] = z_g*W*(2*eps2*eps3 + 2*eps1*eta)
+        g_quat[4, 0] = z_g*W*(2*eps1*eps3 + 2*eps2*eta)
+        g_quat[5, 0] = 0
+        # For neutrally buoyant vehicles W = B
+        return g_quat
+
 
     def damping(self):
         """Compute and return the total damping forces, including both linear and nonlinear components."""
-        D = SX(6, 6)
-        D[0, 0] = X_u
-        D[1, 1] = Y_v
-        D[2, 2] = Z_w
-        D[3, 3] = K_p
-        D[4, 4] = M_q
-        D[5, 5] = N_r
-        linear_damping = D@x_nb
 
-        Dn_vars = [Dn1, Dn2, Dn3, Dn4, Dn5, Dn6]
-        Dn_list = [(fabs(x_nb).T @ Dn @ x_nb) for Dn in Dn_vars]
-        nonlinear_damping = vertcat(*Dn_list)
-
-        damping = linear_damping + nonlinear_damping
-        return damping
+        linear_damping = -diag(vertcat(X_u,Y_v,Z_w,K_p,M_q,N_r))
+        nonlinear_damping = -diag(vertcat(X_uu,Y_vv,Z_ww,K_pp,M_qq,N_rr))@fabs(x_nb)
+        D_v = linear_damping + nonlinear_damping
+        return D_v
     
     def forward_dynamics(self):
-        body_acc = inv(self.inertia_matrix())@(tau -self.coriolis_centripetal_matrix()@x_nb - self.gvect() -self.damping())
+        body_acc = inv(self.get_inertia_matrix())@(tau - self.coriolis_centripetal_matrix()@x_nb - self.gvect() -self.damping()@x_nb)
         return body_acc
     
     def inverse_dynamics(self):
-        resultant_torque = self.inertia_matrix()@dx_nb + self.coriolis_centripetal_matrix()@x_nb + self.gvect() + self.damping()
+        resultant_torque = self.get_inertia_matrix()@dx_nb + self.coriolis_centripetal_matrix()@x_nb + self.gvect() + self.damping()@x_nb
         return resultant_torque
+
+    def control_Allocation(self):
+        u = inv(K)@pinv(T)@tau
+        return u
