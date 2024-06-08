@@ -18,7 +18,7 @@ class Kinematics(Base):
         return f'{super().__repr__()} Kinematics'
     
     def ned_vel(self):
-        _dn = self.J@x_nb
+        _dn = self.J@(x_nb)
         return _dn
 
     def ned_acc(self):

@@ -31,8 +31,9 @@ repository to your workspace:
 ```bash
 cd path/to/src
 git clone https://github.com/Eddy-Morgan/Diff_UV.git
+pip3 install -r requirements.txt
 python3 -m build --sdist --wheel
-pip install .
+pip3 install .
 ```
 
 ## Getting Started
@@ -49,14 +50,14 @@ Each of the aforementioned terms provide their own distinct data class for indep
 or can be managed altogether within the `diffUV` class. 
 
 ```python
-from diffUV import dyn, kin
-uv_dyn = dyn()
+from diffUV import dyn_body,dyned_eul, kin
+uv_dyn = dyn_body()
 
 inertia_mat = uv_dyn.get_body_inertia_matrix()
 coriolis_mat = uv_dyn.coriolis_body_centripetal_matrix()
 restoring_vec = uv_dyn.gvect_body()
 dampn_mat = uv_dyn.damping_body()
-ned_accel = uv_dyn.forward_dynamics_ned()
+ned_accel = dyned_eul.forward_dynamics_ned()
 ```
 ### Extending with CasADi Capabilities
 All expressions obtained from the diffUV library methods (get_body_inertia_matrix(), coriolis_body_centripetal_matrix(), gvect_body, etc) are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.

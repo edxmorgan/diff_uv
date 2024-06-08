@@ -1,7 +1,4 @@
-from casadi import SX,  vertcat, DM
-
-eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
-uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
+from casadi import SX,  vertcat, DM, horzcat
 
 # 6 DOF states vectors in body-fixed
 u = SX.sym('u')
@@ -24,6 +21,8 @@ dw_nb = vertcat(dp, dq, dr)
 
 x_nb = vertcat(v_nb, w_nb)
 dx_nb = vertcat(dv_nb, dw_nb)
+
+vc = SX.sym('vc',6,1) #current velocity
 ################################################
 
 # 6 DOF states vectors in NED
@@ -59,6 +58,10 @@ n = vertcat(p_n, eul)
 dn  = vertcat(dp_n, deul)
 ddn  = vertcat(ddp_n, ddeul)
 
+eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
+uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
+
+nq = vertcat(p_n, uq)
 ###################################################
 
 
@@ -71,12 +74,23 @@ I_x = SX.sym('I_x')  # moment of inertia x entry
 I_y = SX.sym('I_y')  # moment of inertia y entry
 I_z = SX.sym('I_z')  # moment of inertia z entry
 I_zx = SX.sym('I_zx')  # product of inertia zx entry
+I_xz = SX.sym('I_xz')  # product of inertia zx entry
+I_xy = SX.sym('I_xy')  # product of inertia yx entry
 I_yx = SX.sym('I_yx')  # product of inertia yx entry
 I_zy = SX.sym('I_zy')  # product of inertia zy entry
+I_yz = SX.sym('I_yz')  # product of inertia zy entry
 
-x_g = SX.sym('x_g')  # Center of gravity, x-axis
-y_g = SX.sym('y_g')  # Center of gravity, y-axis
-z_g = SX.sym('z_g')  # Center of gravity, z-axis
+Ib_b = SX(3,3)
+Ib_b[0, :] = horzcat(I_x, -I_xy, -I_xz)
+Ib_b[1, :] = horzcat(-I_xy, I_y, -I_yz)
+Ib_b[2, :] = horzcat(-I_xz, -I_yz, I_z)
+
+
+x_g = SX.sym('x_g')  # Center of gravity, x-axis wrt to the CO
+y_g = SX.sym('y_g')  # Center of gravity, y-axis wrt to the CO
+z_g = SX.sym('z_g')  # Center of gravity, z-axis wrt to the CO
+
+r_g = vertcat(x_g, y_g, z_g)
 
 x_b = SX.sym('x_b')  # Center of buoyancy, x-axis
 y_b = SX.sym('y_b')  # Center of buoyancy, y-axis
@@ -124,6 +138,15 @@ N_dp = SX.sym('N_dp') # coupled Added mass in yaw & roll
 N_dq = SX.sym('N_dq') # coupled Added mass in yaw & pitch
 N_dr = SX.sym('N_dr') # Added mass in yaw
 
+_MA = SX(6, 6)
+_MA[0, :] = horzcat(X_du, X_dv, X_dw, X_dp, X_dq, X_dr)
+_MA[1, :] = horzcat(Y_du, Y_dv, Y_dw, Y_dp, Y_dq, Y_dr)
+_MA[2, :] = horzcat(Z_du, Z_dv, Z_dw, Z_dp, Z_dq, Z_dr)
+_MA[3, :] = horzcat(K_du, K_dv, K_dw, K_dp, K_dq, K_dr)
+_MA[4, :] = horzcat(M_du, M_dv, M_dw, M_dp, M_dq, M_dr)
+_MA[5, :] = horzcat(N_du, N_dv, N_dw, N_dp, N_dq, N_dr)
+MA = -_MA
+
 ###################################################################
 
 X_u = SX.sym('X_u') # linear Drag coefficient in surge
@@ -157,11 +180,11 @@ K = SX.sym('k',6,6) #thrust coefficient matrix
 T = SX.sym('T',6,6) #thruster configuration
 
 ###################################################################
-# Starboard–port symmetrical underwater vehicles config
-star_board_config = DM([[1, 0, 1, 0, 1, 0],
-           [0, 1, 0, 1, 0, 1],
-           [1, 0, 1, 0, 1, 0],
-           [0, 1, 0, 1, 0, 1],
-           [1, 0, 1, 0, 1, 0],
-           [0, 1, 0, 1, 0, 1]
-           ])
+# Starboard–port and fore/aft symmetrical underwater vehicles config
+sb_fft_config = DM([[1, 0, 0, 0, 1, 0],
+                        [0, 1, 0, 1, 0, 0],
+                        [0, 0, 1, 0, 0, 0],
+                        [0, 1, 0, 1, 0, 0],
+                        [1, 0, 0, 0, 1, 0],
+                        [0, 0, 0, 1, 0, 1]
+                        ])
