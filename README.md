@@ -62,7 +62,7 @@ dampn_mat = uv_dyn.body_damping_matrix()
 ned_accel = uv_dyned.ned_euler_forward_dynamics()
 ```
 ### Extending with CasADi Capabilities
-All expressions obtained from the diffUV library methods (get_body_inertia_matrix(), coriolis_body_centripetal_matrix(), gvect_body, etc) are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
+All expressions obtained from the diffUV library methods are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
 
 ### Symbolic Differentiation
 Utilize CasADi's automatic differentiation to compute derivatives:
