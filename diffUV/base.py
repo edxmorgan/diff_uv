@@ -23,6 +23,7 @@ class Base(object):
             for k, v in self.jit_func_opts.items():
                 self.func_opts[k] = v
         self._initialize_inertia_matrix()
+        self.body_state_vector = x_nb
 
     def __repr__(self) -> str:
         return "differentiable underwater dynamics"
@@ -44,20 +45,20 @@ class Base(object):
         self.M = substitute(self.M, I_yz, SX(0))
 
 
-    def get_body_inertia_matrix(self):
+    def body_inertia_matrix(self):
         """Compute and return the UV inertia matrix with configuration adjustments."""
         # M = Function("M", syms , [M], self.func_opts)
         return self.M
     
-    def coriolis_body_centripetal_matrix(self):
+    def body_coriolis_centripetal_matrix(self):
         """Compute and return the Coriolis and centripetal matrix based on current vehicle state in body"""
-        M = self.get_body_inertia_matrix()
+        M = self.body_inertia_matrix()
         C_rb = M
         CA = coriolis_lag_param(MA, x_nb)
         C = C_rb+CA
         return C
 
-    def gvect_body(self):
+    def body_restoring_vector(self):
         """Compute and return the hydrostatic restoring forces."""
         g = SX(6, 1)
         g[0, 0] = (W - B)*sin(thet)
@@ -72,19 +73,19 @@ class Base(object):
         # For neutrally buoyant vehicles W = B
         return g
 
-    def damping_body(self):
+    def body_damping_matrix(self):
         """Compute and return the total damping forces, including both linear and nonlinear components in body"""
         linear_damping = -diag(vertcat(X_u,Y_v,Z_w,K_p,M_q,N_r))
         nonlinear_damping = -diag(vertcat(X_uu,Y_vv,Z_ww,K_pp,M_qq,N_rr))@fabs(x_nb)
         D_v = linear_damping + nonlinear_damping
         return D_v
 
-    def forward_dynamics_body(self):
-        body_acc = inv(self.get_body_inertia_matrix())@(tau_body - self.coriolis_body_centripetal_matrix()@x_nb - self.gvect_body() -self.damping_body()@x_nb)
+    def body_forward_dynamics(self):
+        body_acc = inv(self.body_inertia_matrix())@(tau_body - self.body_coriolis_centripetal_matrix()@x_nb - self.body_restoring_vector() -self.body_damping_matrix()@x_nb)
         return body_acc
 
-    def inverse_dynamics_body(self):
-        resultant_torque = self.get_body_inertia_matrix()@dx_nb + self.coriolis_body_centripetal_matrix()@x_nb + self.gvect_body() + self.damping_body()@x_nb
+    def body_inverse_dynamics(self):
+        resultant_torque = self.body_inertia_matrix()@dx_nb + self.body_coriolis_centripetal_matrix()@x_nb + self.body_restoring_vector() + self.body_damping_matrix()@x_nb
         return resultant_torque
     
     # def control_Allocation(self):

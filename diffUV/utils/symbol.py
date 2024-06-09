@@ -77,13 +77,14 @@ ddn  = vertcat(ddp_n, ddeul)
 eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
 uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
 
-deta = -0.5*(eps1*p + eps2*q + eps3*r)
-deps1 = 0.5*(eta*p - eps3*q + eps2*r)
-deps2 = 0.5*(eps3*p + eta*q - eps1*r)
-deps3 = 0.5*(-eps2*p + eps1*q - eta*r)
-duq = vertcat(deta,deps1,deps2,deps3) # differential unit quaternion
+# deta = -0.5*(eps1*p + eps2*q + eps3*r)
+# deps1 = 0.5*(eta*p - eps3*q + eps2*r)
+# deps2 = 0.5*(eps3*p + eta*q - eps1*r)
+# deps3 = 0.5*(-eps2*p + eps1*q - eta*r)
+# duq = vertcat(deta,deps1,deps2,deps3) # differential unit quaternion
 
 nq = vertcat(p_n, uq)
+# dnq = vertcat(dp_n, uq)
 ###################################################
 
 
