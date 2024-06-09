@@ -1,4 +1,6 @@
 from casadi import SX,  vertcat, DM, horzcat
+import sympy as sp
+from sympy.physics.mechanics import dynamicsymbols
 
 # 6 DOF states vectors in body-fixed
 u = SX.sym('u')
@@ -40,6 +42,20 @@ dp_n = vertcat(dx, dy, dz)
 ddp_n = vertcat(ddx, ddy, ddz)
 
 
+theta_sp, phi_sp = dynamicsymbols('theta phi')
+dtheta_sp = sp.diff(theta_sp,'t')
+dphi_sp =sp.diff(phi_sp,'t')
+
+eul_sp = [theta_sp, dtheta_sp, phi_sp, dphi_sp]
+# Create the sympy matrix T
+T_sp = sp.Matrix([
+    [1, sp.sin(phi_sp)*sp.tan(theta_sp), sp.cos(phi_sp)*sp.tan(theta_sp)],
+    [0, sp.cos(phi_sp), -sp.sin(phi_sp)],
+    [0, sp.sin(phi_sp)/sp.cos(theta_sp), sp.cos(phi_sp)/sp.cos(theta_sp)]
+])
+
+dT_sp = sp.diff(T_sp,'t',1)
+
 thet = SX.sym('thet')
 dthet = SX.sym('dthet')
 ddthet = SX.sym('ddthet')
@@ -60,6 +76,12 @@ ddn  = vertcat(ddp_n, ddeul)
 
 eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
 uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
+
+deta = -0.5*(eps1*p + eps2*q + eps3*r)
+deps1 = 0.5*(eta*p - eps3*q + eps2*r)
+deps2 = 0.5*(eps3*p + eta*q - eps1*r)
+deps3 = 0.5*(-eps2*p + eps1*q - eta*r)
+duq = vertcat(deta,deps1,deps2,deps3) # differential unit quaternion
 
 nq = vertcat(p_n, uq)
 ###################################################

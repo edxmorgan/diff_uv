@@ -1,4 +1,5 @@
-from casadi import cos, SX, sin, tan, skew, inv
+from casadi import cos, SX, sin, tan, inv, vertcat
+from diffUV.utils.operators import rot_diff, cross_pO, sympy2casadi
 
 def linear_vel_R(phi, thet, psi):
     R = SX(3, 3)
@@ -37,13 +38,8 @@ def inv_angular_vel_T(phi, thet):
     T_1[2,2] = cos(thet)*cos(phi)
     return T_1
 
-def T_diff(R_n,w_b):
-    S = skew(w_b)
-    dR_n = R_n@S
-    return dR_n
-
-
-def J_kin(phi, thet, psi):
+def J_kin(eul):
+    phi, thet, psi = eul[0],eul[1],eul[2]
     R = linear_vel_R(phi, thet, psi)
     T = angular_vel_T(phi, thet)
     J = SX.zeros(6, 6)
@@ -51,7 +47,21 @@ def J_kin(phi, thet, psi):
     J[3:,3:] = T
     return J,R,T
 
-def inv_J_kin(phi, thet, psi):
+def J_dot(eul, deul,dT, eul_sp, w_nb):
+    phi, thet, _ = eul[0],eul[1],eul[2]
+    dthet, dphi, _ = deul[0],deul[1],deul[2]
+    theta_sp, dtheta_sp, phi_sp, dphi_sp = eul_sp[0], eul_sp[1], eul_sp[2], eul_sp[3]
+    _,R,T = J_kin(eul)
+    dR = rot_diff(R, w_nb)
+    dT = sympy2casadi(dT, [theta_sp, dtheta_sp, phi_sp, dphi_sp], vertcat(thet,dthet,phi,dphi))
+    dJ = SX.zeros(6, 6)
+    dJ[:3,:3] = dR
+    dJ[3:,3:] = dT
+    return dJ, dR, dT
+
+
+def inv_J_kin(eul):
+    phi, thet, psi = eul[0],eul[1],eul[2]
     RT = inv_linear_vel_R(phi, thet, psi)
     inv_T = inv_angular_vel_T(phi, thet)
     inv_J = SX.zeros(6, 6)

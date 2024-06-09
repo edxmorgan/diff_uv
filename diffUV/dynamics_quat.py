@@ -1,7 +1,7 @@
 from casadi import inv
 from diffUV.base import Base
 from diffUV.utils.symbol import *
-import diffUV.utils.dual_quaternion as Tquat
+import diffUV.utils.quaternion_ops as Tquat
 
 class DynamicsQuat(Base):
     def __init__(self):

@@ -1,14 +1,16 @@
 from casadi import inv
 from diffUV.base import Base
 from diffUV.utils.symbol import *
-import diffUV.utils.transformation_matrix as T_eul
+import diffUV.utils.euler_ops as T_eul
 
 class DynamicsEuler(Base):
     def __init__(self):
         super().__init__()
-        self.J_INV, _,_ = T_eul.inv_J_kin(phi, thet, psi)
+        self.J, R, T = T_eul.J_kin(eul)
+        self.J_INV, _,_ = T_eul.inv_J_kin(eul)
         self.J_INV_T = self.J_INV.T
         self.state_vector = vertcat(n,dn)
+        self.J_dot, _, _ = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
 
     def __repr__(self) -> str:
         """Euler representation of the Dynamics instance  in ned frame"""

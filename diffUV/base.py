@@ -3,8 +3,8 @@
 from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv,substitute
 from platform import machine, system
 import diffUV.utils.operators as ops
-import diffUV.utils.transformation_matrix as T
-from diffUV.utils.operators import Smtrx, coriolis_lag_param
+import diffUV.utils.euler_ops as T
+from diffUV.utils.operators import cross_pO, coriolis_lag_param
 from diffUV.utils.symbol import *
 
 
@@ -30,7 +30,7 @@ class Base(object):
     def _initialize_inertia_matrix(self):
         """Internal method to compute the UV inertia matrix based on vehicle parameters."""
         M_rb = SX(6,6)
-        S = Smtrx(r_g)
+        S = cross_pO(r_g)
         M_rb[:3,:3] = m*SX.eye(3)
         M_rb[:3,3:] = -m*S
         M_rb[3:,:3] = m*S

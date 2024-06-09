@@ -1,18 +1,15 @@
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
 from diffUV.base import Base
-from diffUV.utils import transformation_matrix as Tm
+from diffUV.utils import euler_ops as T_eul
+from diffUV.utils import quaternion_ops as T_quat
 from diffUV.utils.symbol import *
 
 class Kinematics(Base):
     def __init__(self):
-        self.J, self.R, self.T = Tm.J_kin(phi, thet, psi)
-        self.J_inv, self.R_inv, self.T_inv = Tm.inv_J_kin(phi, thet, psi)
-        self.dR = Tm.T_diff(self.R, v_nb)
-        self.dT = Tm.T_diff(self.T, w_nb)
-        self.dJ = SX.zeros(6, 6)
-        self.dJ[:3,:3] = self.dR
-        self.dJ[3:,3:] = self.dT
+        self.J, self.R, self.T = T_eul.J_kin(phi, thet, psi)
+        self.J_inv, self.R_inv, self.T_inv = T_eul.inv_J_kin(phi, thet, psi)
+        self.J_dot, _, _ = T_eul.J_dot(eul,deul, w_nb)
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Kinematics'
@@ -22,7 +19,7 @@ class Kinematics(Base):
         return _dn
 
     def ned_acc(self):
-        _ddn = self.J@dx_nb + self.dJ@x_nb
+        _ddn = self.J@dx_nb + self.J_dot@x_nb
         return _ddn
     
     def body_position(self):
@@ -30,5 +27,5 @@ class Kinematics(Base):
         return v
     
     def body_vel(self):
-        dv = self.J_inv@(ddn - self.dJ@self.J_inv@dn)
+        dv = self.J_inv@(ddn - self.J_dot@self.J_inv@dn)
         return dv
