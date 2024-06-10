@@ -3,7 +3,7 @@
 from diffUV.base import Base
 from diffUV.utils import euler_ops as T_eul
 from diffUV.utils import quaternion_ops as T_quat
-from diffUV.utils.symbol import *
+from diffUV.utils.symbols import *
 
 class Kinematics():
     def __init__(self):

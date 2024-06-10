@@ -5,7 +5,7 @@ from platform import machine, system
 from diffUV.utils import operators as ops
 from diffUV.utils import euler_ops as T
 from diffUV.utils.operators import cross_pO, coriolis_lag_param
-from diffUV.utils.symbol import *
+from diffUV.utils.symbols import *
 
 
 class Base(object):

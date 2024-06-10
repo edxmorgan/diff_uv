@@ -1,6 +1,6 @@
 from casadi import inv
 from diffUV.base import Base
-from diffUV.utils.symbol import *
+from diffUV.utils.symbols import *
 from diffUV.utils import euler_ops as T_eul
 
 class DynamicsEuler(Base):
