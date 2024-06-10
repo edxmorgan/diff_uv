@@ -10,17 +10,17 @@ several assumptions can be made to simplify the dynamic model and reduce the num
 unknown parameters in the model. 
 
 The assumptions that have been made for the dynamics
-of a common ligtweight vehicle(the BlueROV2 Heavy) are listed in the following:
+of a lightweight underwater vehicle are listed in the following:
 
-* BlueROV2 Heavy operates at relative low speeds (i.e. less than 2 m/s), lift
+* Operates at relative low speeds (i.e. less than 2 m/s), lift
 forces can be neglected.
-* BlueROV2 Heavy is assumed to have port-starboard symmetry and fore-aft
+* Assumed to have port-starboard symmetry and fore-aft
 symmetry; and the centre of gravity (CG) is assumed to be located in the symmetry
 planes.
-* BlueROV2 Heavy is assumed to be hydrodynamically symmetrical about 6-DoF.
+* Assumed to be hydrodynamically symmetrical about 6-DoF.
 Accordingly, the motions between DoFs of the vehicle in hydrodynamic can be
 decoupled.
-* BlueROV2 Heavy is assumed to operate below the wave-affected zone. As a result,
+* Assumed to operate below the wave-affected zone. As a result,
 disturbances of waves on the vehicle are negligible.
 
 ## Getting Started
