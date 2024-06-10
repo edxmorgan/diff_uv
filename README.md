@@ -61,7 +61,7 @@ dampn_mat = uv_dyn.body_damping_matrix()
 
 ned_accel = uv_dyned.ned_euler_forward_dynamics()
 ```
-For detailed usage examples of the Diff_UV library, see our [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage.ipynb).
+For detailed usage examples of the Diff_UV library, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage.ipynb).
 
 ### Extending with CasADi Capabilities
 All expressions obtained from the diffUV library methods are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
