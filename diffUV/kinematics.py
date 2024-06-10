@@ -5,11 +5,12 @@ from diffUV.utils import euler_ops as T_eul
 from diffUV.utils import quaternion_ops as T_quat
 from diffUV.utils.symbol import *
 
-class Kinematics(Base):
+class Kinematics():
     def __init__(self):
-        self.J, self.R, self.T = T_eul.J_kin(phi, thet, psi)
-        self.J_inv, self.R_inv, self.T_inv = T_eul.inv_J_kin(phi, thet, psi)
-        self.J_dot, _, _ = T_eul.J_dot(eul,deul, w_nb)
+        self.J, self.R, self.T = T_eul.J_kin(eul)
+        self.J_inv, self.R_inv, self.T_inv = T_eul.inv_J_kin(eul)
+        self.J_dot, _, _ = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
+        self.ned_state_vector = vertcat(n,dn)
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Kinematics'
