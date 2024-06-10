@@ -73,8 +73,14 @@ Expressions can be directly exported to MATLAB and C++ formats, for integration 
 ```python
 import os
 from casadi import Function
+from diffUV.utils.symbols import *
 
-M_func = Function('M_b', [m, I_o, z_g, added_m, coupling_added_m], [inertia_mat]) # for both numerical & symbolic use
+I_o = vertcat(I_x, I_y, I_z,I_xz) # rigid body inertia wrt body origin
+decoupled_added_m = vertcat(X_du, Y_dv, Z_dw, K_dp, M_dq, N_dr) # added mass in diagonals
+coupled_added_m =  vertcat(X_dq, Y_dp, N_dp, M_du, K_dv) # effective added mass in non diagonals 
+
+
+M_func = Function('M_b', [m, I_o, z_g, decoupled_added_m, coupled_added_m], [inertia_mat]) # for both numerical & symbolic use
 M_func.generate("M_b.c")
 os.system(f"gcc -fPIC -shared M_b.c -o libM_b.so")
 ```
