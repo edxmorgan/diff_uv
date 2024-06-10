@@ -68,10 +68,10 @@ setup(
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
-    classifiers = [
-    "Intended Audience :: Science/Research",
-    "Development Status :: 4 - Beta",
-    "Programming Language :: Python"
+    classifiers=[
+        "Intended Audience :: Science/Research",
+        "Development Status :: 4 - Beta",
+        "Programming Language :: Python"
     ],
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
@@ -105,7 +105,9 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/discussions/install-requires-vs-requirements/
-    # install_requires=["casadi"],  # Optional
+    install_requires=[
+        "casadi==3.6.5",
+        "sympy==1.12.1"],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:

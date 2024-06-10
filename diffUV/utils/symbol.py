@@ -197,7 +197,7 @@ M_qq = SX.sym('M_qq') # quadratic Drag coefficient in pitch
 N_rr = SX.sym('N_rr') # quadratic Drag coefficient in yaw
 
 ###################################################################
-tau_body = SX.sym('tau',6,1) #body generalized forces and torque
+tau_b = SX.sym('tau_b',6,1) #body generalized forces and torque
 
 K = SX.sym('k',6,6) #thrust coefficient matrix
 T = SX.sym('T',6,6) #thruster configuration

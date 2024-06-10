@@ -1,7 +1,7 @@
 from casadi import inv
 from diffUV.base import Base
 from diffUV.utils.symbol import *
-import diffUV.utils.euler_ops as T_eul
+from diffUV.utils import euler_ops as T_eul
 
 class DynamicsEuler(Base):
     def __init__(self):
@@ -40,7 +40,7 @@ class DynamicsEuler(Base):
         return D
     
     def ned_euler_forward_dynamics(self):
-        ned_acc = inv(self.ned_euler_inertia_matrix())@(self.J_INV_T@tau_body - self.ned_euler_coriolis_centripetal_matrix()@dn - self.ned_euler_restoring_vector() - self.ned_euler_damping()@dn)
+        ned_acc = inv(self.ned_euler_inertia_matrix())@(self.J_INV_T@tau_b - self.ned_euler_coriolis_centripetal_matrix()@dn - self.ned_euler_restoring_vector() - self.ned_euler_damping()@dn)
         return ned_acc
 
     def ned_euler_inverse_dynamics(self):

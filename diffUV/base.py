@@ -2,8 +2,8 @@
 """
 from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv,substitute
 from platform import machine, system
-import diffUV.utils.operators as ops
-import diffUV.utils.euler_ops as T
+from diffUV.utils import operators as ops
+from diffUV.utils import euler_ops as T
 from diffUV.utils.operators import cross_pO, coriolis_lag_param
 from diffUV.utils.symbol import *
 
@@ -53,9 +53,10 @@ class Base(object):
     def body_coriolis_centripetal_matrix(self):
         """Compute and return the Coriolis and centripetal matrix based on current vehicle state in body"""
         M = self.body_inertia_matrix()
-        C_rb = M
-        CA = coriolis_lag_param(MA, x_nb)
-        C = C_rb+CA
+        # C_rb = coriolis_lag_param(M, x_nb)
+        # CA = coriolis_lag_param(MA, x_nb)
+        # C = C_rb+CA
+        C = coriolis_lag_param(M, x_nb)
         return C
 
     def body_restoring_vector(self):
@@ -81,7 +82,7 @@ class Base(object):
         return D_v
 
     def body_forward_dynamics(self):
-        body_acc = inv(self.body_inertia_matrix())@(tau_body - self.body_coriolis_centripetal_matrix()@x_nb - self.body_restoring_vector() -self.body_damping_matrix()@x_nb)
+        body_acc = inv(self.body_inertia_matrix())@(tau_b - self.body_coriolis_centripetal_matrix()@x_nb - self.body_restoring_vector() -self.body_damping_matrix()@x_nb)
         return body_acc
 
     def body_inverse_dynamics(self):
