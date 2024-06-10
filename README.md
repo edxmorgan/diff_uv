@@ -68,6 +68,46 @@ from casadi import jacobian
 accel_jacobian = jacobian(ned_accel, uv_dyned.ned_state_vector)
 ```
 
+### Code Generation
+Expressions can be directly exported to MATLAB and C++ formats, for integration with external systems and applications.
+```python
+import os
+M_func = Function('M_b', [m, I_o, z_g, added_m, coupling_added_m], [inertia_mat]) # for both numerical & symbolic use
+M_func.generate("M_b.c")
+os.system(f"gcc -fPIC -shared M_b.c -o libM_b.so")
+```
+```cpp
+// C++ (and CasADi)
+#include <casadi/casadi.hpp>
+using namespace casadi;
+
+void diffuv_usage_cplusplus(){
+  std::cout << "---" << std::endl;
+  std::cout << "Usage from CasADi C++:" << std::endl;
+  std::cout << std::endl;
+
+  // Use CasADi's "external" to load the compiled function
+  Function f = external("M_b", "libM_b.so");
+
+  // Use like any other CasADi function
+  double m = 11.5;
+  std::vector<double> Io = {0.16, 0.16, 0.16, 0};
+  double z_g = 0.02;
+  std::vector<double> added_m = {-5.5 , -12.7 , -14.57,  -0.12,  -0.12,  -0.12};
+  std::vector<double> coupl_added_m = {0, 0, 0, 0, 0}; // assuming decoupling motion
+  std::vector<DM> arg = {m, Io, z_g, added_m, coupl_added_m};
+  std::vector<DM> res = f(arg);
+
+  std::cout << "result (0): " << res.at(0) << std::endl;
+  std::cout << "result (1): " << res.at(1) << std::endl;
+}
+
+int main()
+{
+    diffuv_usage_cplusplus();
+    return 0;
+}
+
 ## References
 Fossen, T.I. (2011) Handbook of Marine Craft Hydrodynamics and Motion Control. John Wiley & Sons, Inc., Chichester, UK.
 https://doi.org/10.1002/9781119994138

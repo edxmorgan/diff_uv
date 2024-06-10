@@ -34,7 +34,7 @@ class Params:
     N_dr = -0.12 #(kg m2/rad)
 
     added_m = np.array([X_du, Y_dv, Z_dw, K_dp, M_dq, N_dr])
-    coupl_added_m = np.array([0, 0, 0 ,0 ,0])
+    coupl_added_m = np.array([0, 0, 0, 0, 0]) # assuming decoupling motion
 
     Xu = -4.03 #(Ns/m) 
     Yv = -6.22 #(Ns/m) 
