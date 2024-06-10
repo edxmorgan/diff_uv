@@ -107,6 +107,7 @@ int main()
     diffuv_usage_cplusplus();
     return 0;
 }
+```
 
 ## References
 Fossen, T.I. (2011) Handbook of Marine Craft Hydrodynamics and Motion Control. John Wiley & Sons, Inc., Chichester, UK.
