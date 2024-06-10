@@ -23,20 +23,14 @@ decoupled.
 * BlueROV2 Heavy is assumed to operate below the wave-affected zone. As a result,
 disturbances of waves on the vehicle are negligible.
 
-## Installation
-
-The Diff_UV library has been implemented as a python3 pip package. To install and use this library in your own project, simply clone this
+## Getting Started
+To use Diff_UV in your own project, simply clone this
 repository to your workspace:
 
 ```bash
 cd path/to/src
 git clone https://github.com/Eddy-Morgan/Diff_UV.git
-pip3 install -r requirements.txt
-python3 -m build --sdist --wheel
-pip3 install .
 ```
-
-## Getting Started
 
 All hydrodynamic terms implemented in this project have been defined using Fossen's equations
 for hydrodynamics. The hydrodynamic terms implemented include:
@@ -61,10 +55,10 @@ dampn_mat = uv_dyn.body_damping_matrix()
 
 ned_accel = uv_dyned.ned_euler_forward_dynamics()
 ```
-For detailed usage examples of the Diff_UV library, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage.ipynb).
+For detailed usage examples of the Diff_UV, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage.ipynb).
 
 ### Extending with CasADi Capabilities
-All expressions obtained from the diffUV library methods are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
+All expressions obtained from the diffUV methods are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
 
 ### Symbolic Differentiation
 Utilize CasADi's automatic differentiation to compute derivatives:
