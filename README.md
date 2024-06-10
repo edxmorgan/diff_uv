@@ -41,8 +41,8 @@ All kinematics & hydrodynamic terms implemented in this project have been define
 - Forward dynamics: in body, ned and quaternion(to be updated).
 - Inverse dynamics: in body, ned and quaternion(to be updated).
 
-Each of the aforementioned terms provide their own distinct data class for independent use
-or can be managed altogether within the `diffUV` class. 
+Each of the aforementioned terms provide their own distinct data methods for independent use
+and are managed altogether within the `diffUV` class. 
 
 ```python
 from diffUV import dyn_body,dyned_eul, kin
