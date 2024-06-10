@@ -32,7 +32,7 @@ cd path/to/src
 git clone https://github.com/Eddy-Morgan/Diff_UV.git
 ```
 
-All kinematics & hydrodynamic terms implemented in this project have been defined using Fossen's equations. The dynamic terms implemented include:
+All kinematics & hydrodynamic terms implemented in this project have been defined using Fossen's equations. The terms implemented include:
 - Kinematics : Rotation & Coordinate Transformation Matrices
 - Mass: rigid body inertia and added mass in body, ned and quaternion.
 - Coriolis: centripetal, coriolis, and added coriolis in body, ned and quaternion.
