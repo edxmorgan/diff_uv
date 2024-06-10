@@ -32,9 +32,7 @@ cd path/to/src
 git clone https://github.com/Eddy-Morgan/Diff_UV.git
 ```
 
-All hydrodynamic terms implemented in this project have been defined using Fossen's equations
-for hydrodynamics. The hydrodynamic terms implemented include:
-
+All hydrodynamic terms implemented in this project have been defined using Fossen's equations. The dynamic terms implemented include:
 - Mass: rigid body inertia and added mass
 - Coriolis: centripetal, coriolis, and added coriolis
 - Damping: linear and quadratic damping
