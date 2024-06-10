@@ -72,10 +72,13 @@ accel_jacobian = jacobian(ned_accel, uv_dyned.ned_state_vector)
 Expressions can be directly exported to MATLAB and C++ formats, for integration with external systems and applications.
 ```python
 import os
+from casadi import Function
+
 M_func = Function('M_b', [m, I_o, z_g, added_m, coupling_added_m], [inertia_mat]) # for both numerical & symbolic use
 M_func.generate("M_b.c")
 os.system(f"gcc -fPIC -shared M_b.c -o libM_b.so")
 ```
+
 ```cpp
 // C++ (and CasADi)
 #include <casadi/casadi.hpp>
