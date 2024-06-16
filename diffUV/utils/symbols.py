@@ -54,6 +54,7 @@ T_sp = sp.Matrix([
     [0, sp.sin(phi_sp)/sp.cos(theta_sp), sp.cos(phi_sp)/sp.cos(theta_sp)]
 ])
 
+
 dT_sp = sp.diff(T_sp,'t',1)
 
 thet = SX.sym('thet')

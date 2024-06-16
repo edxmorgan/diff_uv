@@ -39,7 +39,7 @@ class Params:
     Xu = -4.03 #(Ns/m) 
     Yv = -6.22 #(Ns/m) 
     Zw = -5.18 #(Ns/m) 
-    Kp  = -0.07 #(Ns/rad) 
+    Kp = -0.07 #(Ns/rad) 
     Mq = -0.07 #(Ns/rad)
     Nr = -0.07 #(Ns/rad) 
 

@@ -1,24 +1,29 @@
 from casadi import cos, SX, sin, tan, inv, vertcat
 from diffUV.utils.operators import rot_diff, cross_pO, sympy2casadi
 
-def linear_vel_R(phi, thet, psi):
+def linear_vel_R(eul):
+    phi, thet, psi = eul[0],eul[1],eul[2]
     R = SX(3, 3)
+
     R[0,0] = cos(psi)*cos(thet)
     R[0,1] = -sin(psi)*cos(phi) + cos(psi)*sin(thet)*sin(phi)
-    R[0,2] = sin(psi)*cos(phi) + cos(psi)*cos(phi)*sin(thet)
+    R[0,2] = sin(psi)*sin(phi) + cos(psi)*cos(phi)*sin(thet)
+
     R[1,0] = sin(psi)*cos(thet)
     R[1,1] = cos(psi)*cos(phi) + sin(phi)*sin(thet)*sin(psi)
-    R[1,2] = -cos(psi)*cos(phi) + sin(thet)*sin(psi)*sin(phi)
+    R[1,2] = -cos(psi)*sin(phi) + sin(thet)*sin(psi)*cos(phi)
+
     R[2,0] = -sin(thet)
     R[2,1] = cos(thet)*sin(phi)
     R[2,2] = cos(thet)*cos(phi)
     return R
 
-def inv_linear_vel_R(phi, thet, psi):
-    R = linear_vel_R(phi, thet, psi)
+def inv_linear_vel_R(eul):
+    R = linear_vel_R(eul)
     return R.T
 
-def angular_vel_T(phi, thet):
+def angular_vel_T(eul):
+    phi, thet, psi = eul[0],eul[1],eul[2]
     #T(nb) is undefined for a pitch(psi) angle of θ = ± 90◦
     T = SX.eye(3)
     T[0,1] = sin(phi)*tan(thet)
@@ -29,7 +34,8 @@ def angular_vel_T(phi, thet):
     T[2,2] = cos(phi)/cos(thet)
     return T
 
-def inv_angular_vel_T(phi, thet):
+def inv_angular_vel_T(eul):
+    phi, thet, psi = eul[0],eul[1],eul[2]
     T_1 = SX.eye(3)
     T_1[0,2] = -sin(thet)
     T_1[1,1] = cos(phi)
@@ -39,9 +45,8 @@ def inv_angular_vel_T(phi, thet):
     return T_1
 
 def J_kin(eul):
-    phi, thet, psi = eul[0],eul[1],eul[2]
-    R = linear_vel_R(phi, thet, psi)
-    T = angular_vel_T(phi, thet)
+    R = linear_vel_R(eul)
+    T = angular_vel_T(eul)
     J = SX.zeros(6, 6)
     J[:3,:3] = R
     J[3:,3:] = T
@@ -61,9 +66,8 @@ def J_dot(eul, deul,dT, eul_sp, w_nb):
 
 
 def inv_J_kin(eul):
-    phi, thet, psi = eul[0],eul[1],eul[2]
-    RT = inv_linear_vel_R(phi, thet, psi)
-    inv_T = inv_angular_vel_T(phi, thet)
+    RT = inv_linear_vel_R(eul)
+    inv_T = inv_angular_vel_T(eul)
     inv_J = SX.zeros(6, 6)
     inv_J[:3,:3] = RT
     inv_J[3:,3:] = inv_T
