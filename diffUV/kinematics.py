@@ -8,25 +8,46 @@ from diffUV.utils.symbols import *
 class Kinematics():
     def __init__(self):
         self.J, self.R, self.T = T_eul.J_kin(eul)
-        self.J_inv, self.R_inv, self.T_inv = T_eul.inv_J_kin(eul)
-        self.J_dot, _, _ = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
+        self.J_INV, self.R_INV, self.T_INV = T_eul.inv_J_kin(eul)
+        self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
         self.ned_state_vector = vertcat(n,dn)
+
+        self.Jq, self.Rq, self.Tq = T_quat.Jq_kin(uq)
+        self.Jq_INV, _,_ = T_quat.inv_Jq_kin(uq)
+        self.Jq_INV_T = self.Jq_INV.T
+        self.Jq_dot, self.dRq ,self.dTq = T_quat.Jq_dot(uq, w_nb)
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Kinematics'
     
-    def ned_vel(self):
-        _dn = self.J@(x_nb)
+    def ned_euler_vel(self):
+        _dn = self.J@x_nb
         return _dn
 
-    def ned_acc(self):
+    def ned_euler_acc(self):
         _ddn = self.J@dx_nb + self.J_dot@x_nb
         return _ddn
     
-    def body_position(self):
-        v = self.J_inv@dn
+    def ned_quat_vel(self):
+        _dn_q = self.Jq@x_nb
+        return _dn_q
+
+    def ned_quat_acc(self):
+        _ddn_q = self.Jq@dx_nb + self.Jq_dot@x_nb
+        return _ddn_q
+    
+    def body_position_from_euler(self):
+        v = self.J_INV@dn
         return v
     
-    def body_vel(self):
-        dv = self.J_inv@(ddn - self.J_dot@self.J_inv@dn)
+    def body_vel_from_euler(self):
+        dv = self.J_INV@(ddn - self.J_dot@self.J_INV@dn)
+        return dv
+    
+    def body_position_from_quat(self):
+        v = self.Jq_INV@dn
+        return v
+    
+    def body_vel_from_quat(self):
+        dv = self.Jq_INV@(ddn - self.Jq_dot@self.Jq_INV@dn)
         return dv

@@ -54,7 +54,7 @@ def J_kin(eul):
 
 def J_dot(eul, deul,dT, eul_sp, w_nb):
     phi, thet, _ = eul[0],eul[1],eul[2]
-    dthet, dphi, _ = deul[0],deul[1],deul[2]
+    dphi, dthet, _ = deul[0],deul[1],deul[2]
     theta_sp, dtheta_sp, phi_sp, dphi_sp = eul_sp[0], eul_sp[1], eul_sp[2], eul_sp[3]
     _,R,T = J_kin(eul)
     dR = rot_diff(R, w_nb)

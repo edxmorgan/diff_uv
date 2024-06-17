@@ -67,9 +67,9 @@ psi = SX.sym('psi')
 dpsi = SX.sym('dpsi')
 ddpsi = SX.sym('ddpsi')
 
-eul = vertcat(thet, phi, psi)  # NED euler angular velocity
-deul = vertcat(dthet, dphi, dpsi)
-ddeul = vertcat(ddthet, ddphi, ddpsi)
+eul = vertcat(phi, thet, psi)  # NED euler angular velocity
+deul = vertcat(dphi, dthet, dpsi)
+ddeul = vertcat(ddphi, ddthet, ddpsi)
 
 n = vertcat(p_n, eul)
 dn  = vertcat(dp_n, deul)

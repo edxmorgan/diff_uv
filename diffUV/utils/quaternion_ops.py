@@ -1,4 +1,4 @@
-from casadi import cos, SX, sin, tan, skew, inv, vertcat
+from casadi import cos, SX, sin, tan, skew, inv, vertcat, atan2, asin, sqrt
 from diffUV.utils.operators import rot_diff, sympy2casadi
 
 def linear_vel_Rq(uq):
@@ -94,3 +94,22 @@ def inv_Jq_kin(uq):
     J[:3,:3] = Rq.T
     J[3:,3:] = 4*Tq.T
     return J, Rq.T, 4*Tq.T
+
+
+def euler2q(eul):
+    phi, thet, psi = eul[0],eul[1],eul[2]
+    q = SX(4, 1)
+    q[0,0] = cos(0.5*psi)*cos(0.5*thet)*cos(0.5*phi) + sin(0.5*psi)*sin(0.5*thet)*sin(0.5*phi)
+    q[1,0] = cos(0.5*psi)*cos(0.5*thet)*sin(0.5*phi) - sin(0.5*psi)*sin(0.5*thet)*cos(0.5*phi)
+    q[2,0] = sin(0.5*psi)*cos(0.5*thet)*sin(0.5*phi) + cos(0.5*psi)*sin(0.5*thet)*cos(0.5*phi)
+    q[3,0] = sin(0.5*psi)*cos(0.5*thet)*cos(0.5*phi) - cos(0.5*psi)*sin(0.5*thet)*sin(0.5*phi)
+    return q
+
+def q2euler(uq):
+    norm_uq = uq/sqrt(uq.T@uq)
+    eul_v = SX(3, 1)
+    Rq = linear_vel_Rq(norm_uq)
+    eul_v[0] = atan2(Rq[2,1], Rq[2,2])
+    eul_v[1] = -asin(Rq[2,0])
+    eul_v[2] = atan2(Rq[1,0], Rq[0,0])
+    return eul_v

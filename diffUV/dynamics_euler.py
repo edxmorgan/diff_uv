@@ -6,10 +6,10 @@ from diffUV.utils import euler_ops as T_eul
 class DynamicsEuler(Base):
     def __init__(self):
         super().__init__()
-        self.J, R, T = T_eul.J_kin(eul)
-        self.J_INV, _,_ = T_eul.inv_J_kin(eul)
+        self.J, self.R, self.T = T_eul.J_kin(eul)
+        self.J_INV, self.R_INV, self.T_INV = T_eul.inv_J_kin(eul)
         self.J_INV_T = self.J_INV.T
-        self.J_dot, dRq ,dTq = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
+        self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
         self.ned_state_vector = vertcat(n,dn)
 
     def __repr__(self) -> str:
@@ -38,19 +38,3 @@ class DynamicsEuler(Base):
         D_v = self.body_damping_matrix()
         D = self.J_INV_T@D_v@self.J_INV
         return D
-    
-    def ned_euler_forward_dynamics(self):
-        M = self.ned_euler_inertia_matrix()
-        C = self.ned_euler_coriolis_centripetal_matrix()
-        g = self.ned_euler_restoring_vector()
-        D = self.ned_euler_damping()
-        ned_acc = M #inv(M)@(self.J_INV_T@tau_b - C@dn - g - D@dn)
-        return ned_acc
-
-    def ned_euler_inverse_dynamics(self):
-        M = self.ned_euler_inertia_matrix()
-        C = self.ned_euler_coriolis_centripetal_matrix()
-        g = self.ned_euler_restoring_vector()
-        D = self.ned_euler_damping()
-        resultant_torque = M@ddn + C@dn + g + D@dn
-        return resultant_torque
