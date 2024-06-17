@@ -89,8 +89,12 @@ class Base(object):
         resultant_torque = self.body_inertia_matrix()@dx_nb + self.body_coriolis_centripetal_matrix()@x_nb + self.body_restoring_vector() + self.body_damping_matrix()@x_nb
         return resultant_torque
     
-    # def control_Allocation(self):
-    #     u = inv(K)@pinv(T)@tau_body
-    #     return u
+    def control_Allocation(self):
+        u = inv(K)@pinv(Tc)@tau_b
+        return u
+    
+    def thruster_input2generalized_Forces(self):
+        tau = K@Tc@u
+        return tau
     
     
