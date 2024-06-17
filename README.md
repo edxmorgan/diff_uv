@@ -38,8 +38,8 @@ All kinematics & hydrodynamic terms implemented in this project have been define
 - Coriolis: centripetal, coriolis, and added coriolis in body, ned and quaternion.
 - Damping: linear and quadratic damping in body, ned and quaternion.
 - Restoring forces: buoyancy and gravitational forces in body, ned and quaternion.
-- Forward dynamics: in body, ned and quaternion(to be updated).
-- Inverse dynamics: in body, ned and quaternion(to be updated).
+- Forward dynamics
+- Inverse dynamics
 
 Each of the aforementioned terms provide their own distinct data methods for independent use
 and are managed altogether within the `diffUV` class. 
