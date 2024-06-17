@@ -54,8 +54,6 @@ coriolis_mat = uv_dyn.body_coriolis_centripetal_matrix()
 restoring_vec = uv_dyn.body_restoring_vector()
 dampn_mat = uv_dyn.body_damping_matrix()
 
-Jq_dot = Kinematics.Jq_dot
-
 v_dot = uv_body.body_forward_dynamics()
 ```
 For detailed usage examples of the Diff_UV, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage.ipynb).
