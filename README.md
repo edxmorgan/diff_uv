@@ -65,7 +65,7 @@ All expressions obtained from the diffUV methods are of CasADi type. This allows
 Utilize CasADi's automatic differentiation to compute derivatives:
 ```python
 from casadi import jacobian
-accel_jacobian = jacobian(ned_accel, uv_dyned.ned_state_vector)
+accel_jacobian = jacobian(v_dot, uv_dyn.body_state_vector)
 ```
 
 ### Code Generation
