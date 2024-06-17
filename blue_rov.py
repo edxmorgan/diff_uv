@@ -13,7 +13,7 @@ class Params:
 
     # parameters in rigid body dynamics and restoring forces
     m = 11.5 #(kg)
-    W = 112.8 #(N)
+    W = m*9.81 #(N)
     B = 114.8 #(N)
     rb  = np.array([0, 0, 0]) #(m)
     rg = np.array([0, 0, 0.02]) #(m)
