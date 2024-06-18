@@ -114,7 +114,8 @@ class Base(object):
         return u
     
     def thruster_input2generalized_Forces(self):
-        tau = K@Tc@u
+        # tau = K@Tc@u
+        tau = Tc@thru_u
         return tau
     
     

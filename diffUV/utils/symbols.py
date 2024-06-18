@@ -220,9 +220,10 @@ N_rr = SX.sym('N_rr') # quadratic Drag coefficient in yaw
 
 ###################################################################
 tau_b = SX.sym('tau_b',6,1) #body generalized forces and torque
+thru_u = SX.sym('thruForces',8,1) #thruster inputs
 
-K = SX.sym('k',6,6) #thrust coefficient matrix
-Tc = SX.sym('T',6,6) #thruster configuration
+K = SX.sym('k',8,8) #thrust coefficient matrix
+Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
 # Starboard–port and fore/aft symmetrical underwater vehicles config
