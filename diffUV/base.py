@@ -26,7 +26,7 @@ from diffUV.utils import operators as ops
 from diffUV.utils import euler_ops as T
 from diffUV.utils.operators import cross_pO, coriolis_lag_param
 from diffUV.utils.symbols import *
-
+from diffUV.utils import euler_ops as T_eul
 
 class Base(object):
     func_opts = {}
@@ -44,6 +44,7 @@ class Base(object):
                 self.func_opts[k] = v
         self._initialize_inertia_matrix()
         self.body_state_vector = x_nb
+        self.J, self.R, self.T = T_eul.J_kin(eul)
 
     def __repr__(self) -> str:
         return "differentiable underwater dynamics"
@@ -110,12 +111,12 @@ class Base(object):
         return resultant_torque
     
     def control_Allocation(self):
-        u = inv(K)@pinv(Tc)@tau_b
+        # u = inv(K)@pinv(Tc)@tau_b
+        u = pinv(Tc)@tau_b
         return u
     
     def thruster_input2generalized_Forces(self):
         # tau = K@Tc@u
         tau = Tc@thru_u
         return tau
-    
-    
+        

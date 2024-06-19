@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 
-from casadi import SX,  vertcat, DM, horzcat
+from casadi import SX,  vertcat, DM, horzcat, diag
 import sympy as sp
 from sympy.physics.mechanics import dynamicsymbols
 
@@ -234,3 +234,8 @@ sb_fft_config = DM([[1, 0, 0, 0, 1, 0],
                         [1, 0, 0, 0, 1, 0],
                         [0, 0, 0, 1, 0, 1]
                         ])
+
+Kp = SX.sym('Kp',6,1)
+Kd = SX.sym('Kd',6,1)
+Ki = SX.sym('Ki',6,1)
+nd = SX.sym('nd', 6,1)
