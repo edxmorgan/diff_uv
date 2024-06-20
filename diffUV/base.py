@@ -20,7 +20,7 @@
 
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
-from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv,substitute
+from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv,substitute, sign
 from platform import machine, system
 from diffUV.utils import operators as ops
 from diffUV.utils import euler_ops as T
@@ -80,19 +80,34 @@ class Base(object):
         C = coriolis_lag_param(M, x_nb)
         return C
 
-    def body_restoring_vector(self):
+    def body_restoring_vector(self, freeSurfaceBouyancy=True):
         """Compute and return the hydrostatic restoring forces."""
+        signed_zb_surface = z_g - z_b - z
+
+        if signed_zb_surface > -h/2:
+            mB = B
+
+        # if sign(z) == 1:
+        #     pass
+        # elif sign(z) == -1:
+        #     if sign(zb_g) == 1:
+
+        # else:
+        #     pass
+
+
+
         g = SX(6, 1)
-        g[0, 0] = (W - B)*sin(thet)
-        g[1, 0] = -(W - B)*cos(thet)*sin(phi)
-        g[2, 0] = -(W - B)*cos(thet)*cos(phi)
-        g[3, 0] = -(y_g*W - y_b*B)*cos(thet)*cos(phi) + \
-            (z_g*W - z_b*B)*cos(thet)*sin(phi)
-        g[4, 0] = (z_g*W - z_b*B)*sin(thet) + \
-            (x_g*W - x_b*B)*cos(thet)*cos(phi)
-        g[5, 0] = -(x_g*W - x_b*B)*cos(thet) * \
-            sin(phi) - (y_g*W - y_b*B)*sin(thet)
-        # For neutrally buoyant vehicles W = B
+        g[0, 0] = (W - mB)*sin(thet)
+        g[1, 0] = -(W - mB)*cos(thet)*sin(phi)
+        g[2, 0] = -(W - mB)*cos(thet)*cos(phi)
+        g[3, 0] = -(y_g*W - y_b*mB)*cos(thet)*cos(phi) + \
+            (z_g*W - z_b*mB)*cos(thet)*sin(phi)
+        g[4, 0] = (z_g*W - z_b*mB)*sin(thet) + \
+            (x_g*W - x_b*mB)*cos(thet)*cos(phi)
+        g[5, 0] = -(x_g*W - x_b*mB)*cos(thet) * \
+            sin(phi) - (y_g*W - y_b*mB)*sin(thet)
+
         return g
 
     def body_damping_matrix(self):

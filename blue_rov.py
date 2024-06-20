@@ -44,6 +44,7 @@ class Params:
     B = 114.8 #(N)
     rb  = np.array([0, 0, 0]) #(m)
     rg = np.array([0, 0, 0.02]) #(m)
+    h = 0.254
 
     I_x = 0.16 #(kg m2)
     I_y = 0.16 #(kg m2)

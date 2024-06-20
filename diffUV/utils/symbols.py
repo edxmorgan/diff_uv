@@ -48,6 +48,8 @@ dx_nb = vertcat(dv_nb, dw_nb)
 vc = SX.sym('vc',6,1) #current velocity
 ################################################
 
+h = SX.sym('h') # rov height
+
 # 6 DOF states vectors in NED
 x = SX.sym('x')
 dx = SX.sym('dx')
@@ -58,7 +60,7 @@ ddy = SX.sym('ddy')
 z = SX.sym('z')
 dz = SX.sym('dz')
 ddz = SX.sym('ddz')
-p_n = vertcat(x, y, z)  # NED linear velocity
+p_n = vertcat(x, y, z)  # NED linear position
 dp_n = vertcat(dx, dy, dz)
 ddp_n = vertcat(ddx, ddy, ddz)
 
