@@ -56,7 +56,7 @@ dampn_mat = uv_dyn.body_damping_matrix()
 
 v_dot = uv_body.body_forward_dynamics()
 ```
-For detailed usage examples of the Diff_UV, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage.ipynb).
+For detailed usage examples of the Diff_UV, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage).
 
 ### Extending with CasADi Capabilities
 All expressions obtained from the diffUV methods are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.
