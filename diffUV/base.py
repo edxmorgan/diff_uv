@@ -82,10 +82,10 @@ class Base(object):
 
     def body_restoring_vector(self, freeSurfaceBouyancy=True):
         """Compute and return the hydrostatic restoring forces."""
-        signed_zb_surface = z_g - z_b - z
+        # signed_zb_surface = z_g - z_b - z
 
-        if signed_zb_surface > -h/2:
-            mB = B
+        # if signed_zb_surface > -h/2:
+        #     mB = B
 
         # if sign(z) == 1:
         #     pass
@@ -94,7 +94,7 @@ class Base(object):
 
         # else:
         #     pass
-
+        mB = B
 
 
         g = SX(6, 1)
