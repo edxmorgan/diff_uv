@@ -80,7 +80,7 @@ class Base(object):
         C = coriolis_lag_param(M, x_nb)
         return C
 
-    def body_restoring_vector(self, freeSurfaceBouyancy=True):
+    def body_restoring_vector(self):
         """Compute and return the hydrostatic restoring forces."""
         # signed_zb_surface = z_g - z_b - z
 
