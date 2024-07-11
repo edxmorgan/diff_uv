@@ -229,12 +229,13 @@ Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
 # Starboard–port and fore/aft symmetrical underwater vehicles config
-sb_fft_config = DM([[1, 0, 0, 0, 1, 0],
+sb_fft_config = DM([
+                        [1, 0, 0, 0, 1, 0],
                         [0, 1, 0, 1, 0, 0],
                         [0, 0, 1, 0, 0, 0],
                         [0, 1, 0, 1, 0, 0],
                         [1, 0, 0, 0, 1, 0],
-                        [0, 0, 0, 1, 0, 1]
+                        [0, 0, 0, 0, 0, 1]
                         ])
 
 Kp = SX.sym('Kp',6,1)
