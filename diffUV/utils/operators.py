@@ -21,23 +21,29 @@
 from casadi import skew, SX
 import casadi
 
+# Returns Skew symmetric matrix defined by 3 val vector v. 
+# Based on Eq 2.13
 def cross_pO(v):
     S = skew(v)
     return S
 
+# coriolis_lagrange_parameterization
 def coriolis_lag_param(M, x_nb):
-    # coriolis_lagrange_parameterization
+    # Decompose into linear and angular vel.
     v_nb, w_nb = x_nb[:3], x_nb[3:]
     # print(v_nb)
     # print(w_nb)
-    M11 = M[:3, :3]
-    M12 = M[:3, 3:]
-    M21 = M[3:, :3]
-    M22 = M[3:, 3:]
+    # Decompose into 4ths. 
+    M11 = M[:3, :3] # Quad 1
+    M12 = M[:3, 3:] # Quad 2
+    M21 = M[3:, :3] # Quad 3
+    M22 = M[3:, 3:] # Quad 4 
+
+    # Create coriolis matrix. Based on Eq. 6.44. 
     C = SX.zeros(6, 6)
-    C[3:, :3] = -cross_pO(M11@v_nb + M12@w_nb)
-    C[:3, 3:] = -cross_pO(M11@v_nb + M12@w_nb)
-    C[3:, 3:] = -cross_pO(M21@v_nb + M22@w_nb)
+    C[:3, 3:] = -cross_pO(M11@v_nb + M12@w_nb) # Quad 2 
+    C[3:, :3] = -cross_pO(M11@v_nb + M12@w_nb) # Quad 3 
+    C[3:, 3:] = -cross_pO(M21@v_nb + M22@w_nb) # Quad 4 
     return C
 
 def rot_diff(R_n, w_b):
