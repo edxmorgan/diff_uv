@@ -2,7 +2,7 @@ appnope==0.1.4
 asttokens==2.4.1
 backports.tarfile==1.1.1
 build==1.2.1
-casadi==3.6.5
+casadi
 certifi==2024.2.2
 charset-normalizer==3.3.2
 comm==0.2.2
