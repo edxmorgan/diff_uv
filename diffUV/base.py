@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control 2nd ed. 
+"""This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
 from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv,substitute, sign
 from platform import machine, system
@@ -30,24 +30,7 @@ from diffUV.utils.symbols import *
 from diffUV.utils import euler_ops as T
 from diffUV.utils import euler_ops as T_eul
 
-class Base():
-    
-    # Want 8.2. g(nu) is restoring forces. 
-    # M = mass matrix. Vdot_r is accel in xyz rpy. 
-    # C(v_r) is coriolis forces (Depends on velocity.)
-    # C_RB is coriolis rigid body. pg. 136. 
-    # Eq. 8.3 Assumes Vc is 0. 
-
-    # Inertia depends on accel. 
-    # D(v_tau): Damping (linear and quadratic). Formulated like drag. 
-    # Ch6 is V_r. Relative velocity. v_c is current velocity. 
-    # 
-    # Decompose rigid body as M. 
-    # LOOK AT 8.3 and 8.4. Make Vc. REconsctruct 6.2 using new functions. 
-
-    # MAYBE. 
-    # Add 8.1.4 Add configs for different symmetries. 
-
+class Base(object):
     func_opts = {}
     jit_func_opts = {"jit": True, "jit_options": {"flags": "-Ofast"}}
     # OS/CPU dependent specification of compiler
@@ -55,6 +38,9 @@ class Base():
     # https://docs.python.org/3/library/platform.html
     if system().lower() == "darwin" or machine().lower() == "aarch64":
         jit_func_opts["compiler"] = "shell"
+
+    def __repr__(self) -> str:
+        return "differentiable underwater dynamics"
 
     def __init__(self, func_opts=None, use_jit=True):
         if func_opts:
@@ -64,50 +50,48 @@ class Base():
             for k, v in self.jit_func_opts.items():
                 self.func_opts[k] = v
 
-        self.v_cdot = self.set_flow_accel() # Flow accel. Assume irrotational, constant. 
-
+        # Gets v_cdot and v_rdot
+        self.set_flow_accel() # Flow accel. Assume irrotational, constant. 
         self._initialize_inertia_matrix()
         # 1x6 vector. Xyz, rpy. 
         self.body_state_vector = x_nb
         self.J, self.R, self.T = T_eul.J_kin(eul)
-
-    def __repr__(self) -> str:
-        return "differentiable underwater dynamics"
     
     # Follow 6.2. 
     # Mass matrix already made in symbolic. Rigid body made here. 
     def _initialize_inertia_matrix(self):
         """Internal method to compute the UV inertia matrix based on vehicle parameters."""
-        __M = (self._initialize_mass_rb() + MA) 
+        self._initialize_mass_rb()
+        # self._initialize_mass_ma()
+        __M = (self.M_rb + MA) 
         # Apply symmetry considerations. 
         self.M = __M* sb_fft_config
-        # Apply yg= 0 and Ixy=Iyz=0
-        self.M = substitute(self.M, y_g, SX(0))
-        self.M = substitute(self.M, I_xy, SX(0))
-        self.M = substitute(self.M, I_yz, SX(0))
 
     def _initialize_mass_rb(self):
         # ASSUMPTIONS. Ixy = Iyz = 0. yg = 0. 
         # Making matrix/Eq 8.8. 
         M_rb = SX(6,6) # representative 6x6 0's 
         S = cross_pO(r_g) # Eq 2.13 (skew symmetric) where lambda is CoG wrt CO
-        M_rb[:3,:3] = m*SX.eye(3) 
-        M_rb[:3,3:] = -m*S
-        M_rb[3:,:3] = m*S
-        M_rb[3:,3:] = Ib_b #NOTE ERROR??????
-        # Save. 
-        self.M_rb = M_rb
-        return M_rb
-    
+        M_rb[:3,:3] = m*SX.eye(3) # Quad 1 
+        M_rb[:3,3:] = -m*S # Quad 2 
+        M_rb[3:,:3] = m*S # Quad 3
+        # Quad 4 Apply yg= 0 and Ixy=Iyz=0
+        M_rb[3:,3:] = Ib_b 
+        M_rb = substitute(M_rb, I_xy, SX(0))
+        M_rb = substitute(M_rb, I_yz, SX(0))
+        M_rb = substitute(M_rb, y_g, SX(0))
+        self.M_rb = M_rb # save
+
+
     # Eq 6.3. Ocean current aceleration assuming constant and irrotational flow. 
     def set_flow_accel(self):
         v_cdot = SX.zeros(6,6) # actual 6.6 zeros. 
         S = cross_pO(w_nb)
         v_cdot[:3,:3] = -S
-        v_cdot@v_c
+
+        self.v_cdot = v_cdot@v_c
         # Update every time called b/c depends on v_cdot.
         self.v_rdot = dx_nb-self.v_cdot # Relative accel
-        return v_cdot
 
     def body_inertia_matrix(self):
         """Compute and return the UV inertia matrix with configuration adjustments."""
@@ -119,10 +103,8 @@ class Base():
     def body_coriolis_centripetal_matrix(self):
         """Compute and return the Coriolis and centripetal matrix based on current vehicle state in body"""
         M = self.body_inertia_matrix()
-        # C_rb = coriolis_lag_param(M, x_nb)
-        # CA = coriolis_lag_param(MA, x_nb)
-        # C = C_rb+CA
-        C = (coriolis_lag_param(self.M_rb, v_r)+coriolis_lag_param(MA, v_r))
+        C = coriolis_lag_param(M, v_r)
+
         return C
 
     def body_restoring_vector(self):

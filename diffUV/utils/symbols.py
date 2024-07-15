@@ -46,9 +46,9 @@ x_nb = vertcat(v_nb, w_nb) # body-fixed velocity
 dx_nb = vertcat(dv_nb, dw_nb) # body-fixed accel.
 
 # From Eq. 6.1. Irrotational ocean currents. 
-v_c = vertcat(SX.sym('vc',3,1),SX.zeros(3,1)) # Current/flow velocity
-v_r = x_nb-v_c # Relative velocity 
-
+ # Current/flow velocity
+v_c = SX.sym('v_c', 6, 1)
+v_r = x_nb - v_c
 ################################################
 
 h = SX.sym('h') # rov height
