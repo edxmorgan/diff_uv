@@ -42,10 +42,13 @@ dr = SX.sym('dr')
 w_nb = vertcat(p, q, r)  # body-fixed angular velocity
 dw_nb = vertcat(dp, dq, dr)
 
-x_nb = vertcat(v_nb, w_nb)
-dx_nb = vertcat(dv_nb, dw_nb)
+x_nb = vertcat(v_nb, w_nb) # body-fixed velocity 
+dx_nb = vertcat(dv_nb, dw_nb) # body-fixed accel.
 
-vc = SX.sym('vc',6,1) #current velocity
+# From Eq. 6.1. Irrotational ocean currents. 
+ # Current/flow velocity
+v_c = SX.sym('v_c', 6, 1)
+v_r = x_nb - v_c
 ################################################
 
 h = SX.sym('h') # rov height
@@ -132,11 +135,10 @@ Ib_b[0, :] = horzcat(I_x, -I_xy, -I_xz)
 Ib_b[1, :] = horzcat(-I_xy, I_y, -I_yz)
 Ib_b[2, :] = horzcat(-I_xz, -I_yz, I_z)
 
-
+# CoG.
 x_g = SX.sym('x_g')  # Center of gravity, x-axis wrt to the CO
 y_g = SX.sym('y_g')  # Center of gravity, y-axis wrt to the CO
 z_g = SX.sym('z_g')  # Center of gravity, z-axis wrt to the CO
-
 r_g = vertcat(x_g, y_g, z_g)
 
 x_b = SX.sym('x_b')  # Center of buoyancy, x-axis
@@ -229,12 +231,13 @@ Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
 # Starboard–port and fore/aft symmetrical underwater vehicles config
-sb_fft_config = DM([[1, 0, 0, 0, 1, 0],
+sb_fft_config = DM([
+                        [1, 0, 0, 0, 1, 0],
                         [0, 1, 0, 1, 0, 0],
                         [0, 0, 1, 0, 0, 0],
                         [0, 1, 0, 1, 0, 0],
                         [1, 0, 0, 0, 1, 0],
-                        [0, 0, 0, 1, 0, 1]
+                        [0, 0, 0, 0, 0, 1]
                         ])
 
 Kp = SX.sym('Kp',6,1)

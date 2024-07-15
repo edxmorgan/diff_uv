@@ -18,8 +18,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
+# Whenever importing these scripts, names are defined here.
+from .base import Base as dyn_body #in body 
+# All below depend on .base. 
+from .kinematics import Kinematics as kin
 from .dynamics_euler import DynamicsEuler as dyned_eul #in ned
 from .dynamics_quat import DynamicsQuat as dyned_quat #in ned
-from .base import Base as dyn_body #in body
-from .kinematics import Kinematics as kin
