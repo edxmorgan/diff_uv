@@ -29,7 +29,7 @@ def rel_acc(dx_nb, w_nb, v_c):
     v_cdot[:3,:3] = -S
     v_cdot = v_cdot@v_c
     v_rdot = dx_nb - v_cdot # Relative accel
-    return v_rdot
+    return v_rdot, v_cdot
 
 
 def linear_vel_R(eul):

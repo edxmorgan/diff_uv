@@ -52,9 +52,9 @@ class Base(object):
 
         self._initialize_inertia_matrix()
         # 1x6 vector. Xyz, rpy. 
-        self.body_state_vector = v_r
+        self.body_state_vector = x_nb
         self.J, self.R, self.T = T_eul.J_kin(eul)
-        self.v_rdot = T_eul.rel_acc(dx_nb, w_nb, v_c)
+        self.v_rdot, self.v_cdot = T_eul.rel_acc(dx_nb, w_nb, v_c)
     
     # Follow 6.2. 
     # Mass matrix already made in symbolic. Rigid body made here. 
@@ -138,7 +138,7 @@ class Base(object):
     # Solved for accel based on inv dyn. 
     def body_forward_dynamics(self):
         body_acc = inv(self.body_inertia_matrix())@(tau_b - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
-        return body_acc
+        return body_acc + self.v_cdot
 
     # G_0 missing bc underwater vehicle. No ballast control applicable. Eq. 6.4. 
     def body_inverse_dynamics(self):
