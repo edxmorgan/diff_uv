@@ -22,6 +22,16 @@
 from casadi import cos, SX, sin, tan, inv, vertcat
 from diffUV.utils.operators import rot_diff, cross_pO, sympy2casadi
 
+# Eq 6.3. Ocean current aceleration assuming constant and irrotational flow. 
+def rel_acc(dx_nb, w_nb, v_c):
+    v_cdot = SX.zeros(6,6) # actual 6.6 zeros. 
+    S = cross_pO(w_nb)
+    v_cdot[:3,:3] = -S
+    v_cdot = v_cdot@v_c
+    v_rdot = dx_nb - v_cdot # Relative accel
+    return v_rdot
+
+
 def linear_vel_R(eul):
     phi, thet, psi = eul[0],eul[1],eul[2]
     R = SX(3, 3)

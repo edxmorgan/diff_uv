@@ -50,12 +50,11 @@ class Base(object):
             for k, v in self.jit_func_opts.items():
                 self.func_opts[k] = v
 
-        # Gets v_cdot and v_rdot
-        self.set_flow_accel() # Flow accel. Assume irrotational, constant. 
         self._initialize_inertia_matrix()
         # 1x6 vector. Xyz, rpy. 
-        self.body_state_vector = x_nb
+        self.body_state_vector = v_r
         self.J, self.R, self.T = T_eul.J_kin(eul)
+        self.v_rdot = T_eul.rel_acc(dx_nb, w_nb, v_c)
     
     # Follow 6.2. 
     # Mass matrix already made in symbolic. Rigid body made here. 
@@ -81,17 +80,6 @@ class Base(object):
         M_rb = substitute(M_rb, I_yz, SX(0))
         M_rb = substitute(M_rb, y_g, SX(0))
         self.M_rb = M_rb # save
-
-
-    # Eq 6.3. Ocean current aceleration assuming constant and irrotational flow. 
-    def set_flow_accel(self):
-        v_cdot = SX.zeros(6,6) # actual 6.6 zeros. 
-        S = cross_pO(w_nb)
-        v_cdot[:3,:3] = -S
-
-        self.v_cdot = v_cdot@v_c
-        # Update every time called b/c depends on v_cdot.
-        self.v_rdot = dx_nb-self.v_cdot # Relative accel
 
     def body_inertia_matrix(self):
         """Compute and return the UV inertia matrix with configuration adjustments."""
