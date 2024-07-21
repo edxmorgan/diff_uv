@@ -51,9 +51,9 @@ class Params:
     # Based on Table 5.1
     m = 11.5 #(kg)
     W = m*9.81 #(N). 112.8 N. Weight. 
-    B = 114.8 #(N). Buoyant force assuming net buoyancy of 0.2 kg. 2N const up force. 
-    rb  = np.array([0, 0, 0]) #(m). Placing the centre of the vehicles body frame at center of buoyancy (CoB). 
-    rg = np.array([0, 0, 0.02]) #(m). Assumption that Center of Gravity (CoG) is this distance from CoB. 
+    B = 114.8 #(N). bouyancy 
+    rb  = np.array([0, 0, 0]) #(m). center of buoyancy (CoB) coincides with the center of origin
+    rg = np.array([0, 0, 0.02]) #(m). 
     h = 0.254
 
     # Axis inertias. 
