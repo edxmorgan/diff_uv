@@ -131,7 +131,7 @@ class Base(object):
         linear_damping = -diag(vertcat(X_u,Y_v,Z_w,K_p,M_q,N_r))
         # fabs: absolute value. vertcat: makes a column. diag distributes a row or column across a diagonal. 
         # Damping depends on Vr.
-        nonlinear_damping = -diag(vertcat(X_uu,Y_vv,Z_ww,K_pp,M_qq,N_rr))@fabs(v_r) # Quadratic
+        nonlinear_damping = -diag(vertcat(X_uu,Y_vv,Z_ww,K_pp,M_qq,N_rr)*fabs(v_r)) # Quadratic
         D_v = linear_damping + nonlinear_damping
         return D_v
 
