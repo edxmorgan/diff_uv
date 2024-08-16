@@ -240,7 +240,9 @@ sb_fft_config = DM([
                         [0, 0, 0, 0, 0, 1]
                         ])
 
+dt = SX.sym("dt")
 Kp = SX.sym('Kp',6,1)
 Kd = SX.sym('Kd',6,1)
 Ki = SX.sym('Ki',6,1)
+sum_e_buffer = SX.sym("sum_e_buffer", 6,1)
 nd = SX.sym('nd', 6,1)
