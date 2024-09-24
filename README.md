@@ -6,7 +6,7 @@ A differentiable Underwater vehicles dynamic model in 6 DOFs based on casadi ope
 
 This library provides capabilities to generate the kinematics and dynamics models of an underwater vehicle in a symbolically.
 This makes it possible to solve for gradients, hessians and jacobians using [casadi](https://web.casadi.org/). 
-Through casadi, the dynamics can be interfaced with state-of-the-art codes such as SUNDIALS, IPOPT, FATROP etc for integration and optimisation. It can be used from C++, Python or Matlab/Octave. 
+Through casadi, the dynamics can be interfaced with state-of-the-art codes such as SUNDIALS, IPOPT, FATROP etc for integration and optimisation. It is also possible to do code generatio to be used from C++, Python or Matlab/Octave. 
 
 The following assumptions have been made for the dynamics
 of the underwater vehicle model:
