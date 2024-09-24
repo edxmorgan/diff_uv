@@ -8,6 +8,8 @@ This library provides capabilities to generate the kinematics and dynamics model
 This makes it possible to solve for gradients, hessians and jacobians using [casadi](https://web.casadi.org/). 
 Through casadi, the dynamics can be interfaced with state-of-the-art codes such as SUNDIALS, IPOPT, FATROP etc for integration and optimisation. It is also possible to do code generation to be used from C++, Python or Matlab/Octave. 
 
+Differentiable models are essential in underwater robotics as they enable efficient optimization, learning, and control. They allow for gradient-based optimization in control tasks, learning and adaptation, sensor Fusion and estimation, and support real-time decision-making with Model Predictive Control (MPC). Differentiable models also enable faster simulations and more efficient analysis of complex, nonlinear underwater dynamics.
+
 The following assumptions have been made for the dynamics
 of the underwater vehicle model:
 
