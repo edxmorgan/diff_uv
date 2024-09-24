@@ -1,4 +1,4 @@
-# Diff_UV (Differentiable Underwater Vehicle System)
+# Diff_UV (Differentiable Underwater Vehicle Model)
 A differentiable Underwater vehicles dynamic model in 6 DOFs based on casadi operations.
 
 <!-- ![alt text]() -->
