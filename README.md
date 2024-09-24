@@ -5,7 +5,7 @@ A differentiable Underwater vehicles dynamic model in 6 DOFs based on casadi ope
 <img src="./images/BlueRobotics%202018b.png" width="420"/>
 
 This library provides capabilities to generate the kinematics and dynamics model of an underwater vehicle in a symbolic sense.
-The inertia matrices 𝑀, coriolis 𝐶(𝜈) and drag 𝐷(𝜈), vector restoring forces 𝑔(𝜂), inverse dynamics and forward dynamics can be expressed symbolically.
+The inertia matrice 𝑀, coriolis 𝐶(𝜈) and drag 𝐷(𝜈), vector restoring forces 𝑔(𝜂), inverse dynamics and forward dynamics can be expressed symbolically.
 This makes it possible to solve for gradients, hessians and jacobians using [casadi](https://web.casadi.org/). 
 Through casadi, the dynamics can be interfaced with state-of-the-art codes such as SUNDIALS, IPOPT etc for integration and optimisation. It can be used from C++, Python or Matlab/Octave. 
 
