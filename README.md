@@ -4,13 +4,13 @@ A differentiable Underwater vehicles dynamic model in 6 DOFs based on casadi ope
 <!-- ![alt text]() -->
 <img src="./images/BlueRobotics%202018b.png" width="420"/>
 
-The matrices 𝑀, 𝐶(𝜈) and 𝐷(𝜈), and vector 𝑔(𝜂) in the dynamics contain more than 300 unknown parameters in total. As a result, estimation of all
-parameters is infeasible. Yet, based on the features and operating speeds of the vehicle,
-several assumptions can be made to simplify the dynamic model and reduce the number of
-unknown parameters in the model. 
+This library provides capabilities to generate the kinematics and dynamics model of an underwater vehicle in a symbolic sense.
+The inertia matrices 𝑀, coriolis 𝐶(𝜈) and drag 𝐷(𝜈), vector restoring forces 𝑔(𝜂), inverse dynamics and forward dynamics can be expressed symbolically.
+This makes it possible to solve for gradients, hessians and jacobians using [casadi](https://web.casadi.org/). 
+Through casadi, the dynamics can be interfaced with state-of-the-art codes such as SUNDIALS, IPOPT etc for integration and optimisation. It can be used from C++, Python or Matlab/Octave. 
 
-The assumptions that have been made for the dynamics
-of a lightweight underwater vehicle are listed in the following:
+The following assumptions have been made for the dynamics
+of the underwater vehicle model:
 
 * Operates at relative low speeds (i.e. less than 2 m/s), lift
 forces can be neglected.
