@@ -30,7 +30,7 @@ repository to your workspace:
 
 ```bash
 cd path/to/src
-git clone https://github.com/Eddy-Morgan/Diff_UV.git
+git clone https://github.com/edxmorgan/diff_uv.git
 ```
 
 All kinematics & hydrodynamic terms implemented in this project have been defined using Fossen's formulations. The terms implemented include:
