@@ -2,7 +2,7 @@
 A differentiable Underwater vehicles dynamic model in 6 DOFs based on casadi operations.
 
 <!-- ![alt text]() -->
-<img src="./images/git.png" width="420"/>
+<img src="./images/git.png" width="840"/>
 
 This library provides capabilities to generate the kinematics and dynamics models of an underwater vehicle symbolically.
 This makes it possible to solve for gradients, hessians and jacobians using [casadi](https://web.casadi.org/). 
