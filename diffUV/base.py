@@ -92,7 +92,6 @@ class Base(object):
         """Compute and return the Coriolis and centripetal matrix based on current vehicle state in body"""
         M = self.body_inertia_matrix()
         C = coriolis_lag_param(M, v_r)
-
         return C
 
     def body_restoring_vector(self):
