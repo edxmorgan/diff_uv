@@ -126,7 +126,7 @@ https://doi.org/10.1002/9781119994138
 
 # Citing
 
-If you use `spatial-casadi` in your work, please consider citing the following.
+If you use `diff_uv` in your work, please consider citing the following.
 
 ```bibtex
 @software{diffUV2024
