@@ -122,3 +122,22 @@ int main()
 ## References
 Fossen, T.I. (2011) Handbook of Marine Craft Hydrodynamics and Motion Control. John Wiley & Sons, Inc., Chichester, UK.
 https://doi.org/10.1002/9781119994138
+
+
+# Citing
+
+If you use `spatial-casadi` in your work, please consider citing the following.
+
+```bibtex
+@software{diffUV2024
+  title = "diffUV: A Compact Library to retrieve symbolic representations of kinematics and dynamics of an underwater vehicle.",
+  author = "Edward Morgan",
+  year = "2024",
+  url = {https://github.com/edxmorgan/diff_uv},
+}
+```
+
+# Contributing
+
+If you have any issues with the library, or find inaccuracies in the documentation please [raise an issue](https://github.com/cmower/spatial-casadi/issues/new/choose).
+I am happy to consider new features if you [fork the library](https://github.com/cmower/spatial-casadi/fork) and submit a pull request.
