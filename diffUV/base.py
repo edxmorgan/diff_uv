@@ -20,7 +20,7 @@
 
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
-from casadi import SX, horzcat, inv, sin,cos, fabs, Function, diag, pinv,substitute, sign
+from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, logic_and
 from platform import machine, system
 
 from diffUV.utils import operators as ops
@@ -96,20 +96,21 @@ class Base(object):
 
     def body_restoring_vector(self):
         """Compute and return the hydrostatic restoring forces."""
-        # signed_zb_surface = z_g - z_b - z
 
-        # if signed_zb_surface > -h/2:
-        #     mB = B
+        # A positively buoyant object doesn't "fly out" of water when it reaches the surface because once it reaches the water level,
+        # the buoyant force acting on it becomes equal to its weight, creating a balance and preventing further upward movement; 
+        # essentially, the upward force of buoyancy is counteracted by the downward force of gravity, resulting in a stable floating
+        # position at the water surface.
 
-        # if sign(z) == 1:
-        #     pass
-        # elif sign(z) == -1:
-        #     if sign(zb_g) == 1:
+        # Define a small epsilon to handle floating-point precision for z == 0.0
+        epsilon = 1e-8
 
-        # else:
-        #     pass
-        mB = B
+        # Define buoyancy_conditions
+        b_condition1 = logic_and((B > W), (fabs(z) < epsilon))
+        b_condition2 = z < 0.0
 
+        # Define mB using nested if_else
+        mB = if_else(b_condition1, W, if_else(b_condition2, 0.0, B))
 
         g = SX(6, 1)
         g[0, 0] = (W - mB)*sin(thet)

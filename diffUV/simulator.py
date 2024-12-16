@@ -32,43 +32,67 @@ class Simulator():
         # ned kinematic transformation
         Kinematics = kin()
         self.Jq_ = Kinematics.Jq
-
+        self.J_ = Kinematics.J
         # body representaion
         self.uv_body = dyn_body()
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
     
-    def model(self):
-        xd = self.Jq_@x_nb
-        ode_xdd = self.uv_body.body_forward_dynamics()
+    def model(self, rot_type='euler'):
+        if rot_type == 'quat':
+            xd = self.Jq_@x_nb
+            xdd = self.uv_body.body_forward_dynamics()
 
-        rhs = vertcat(xd, ode_xdd) #the complete ODE vector
-        f_rhs = ca.Function('Odefunc', [m, W, B, r_g, r_b, I_o,
-                                decoupled_added_m, coupled_added_m,
-                                linear_dc, quadratic_dc,
-                                x_nb, v_c, eul, uq, tau_b], [rhs])
+            rhs = vertcat(xd, xdd) #the complete ODE vector
+            f_rhs = ca.Function('Odefunc', [m, W, B, r_g, r_b, I_o,
+                                    decoupled_added_m, coupled_added_m,
+                                    linear_dc, quadratic_dc,
+                                    x_nb, v_c, eul, uq, tau_b, z], [rhs])
 
-        ode = f_rhs(m, W, B, r_g, r_b, I_o, decoupled_added_m,
-                            coupled_added_m, linear_dc, quadratic_dc, x_nb, v_c, q2euler(uq), uq,  tau_b)
+            ode = f_rhs(m, W, B, r_g, r_b, I_o, decoupled_added_m,
+                                coupled_added_m, linear_dc, quadratic_dc, x_nb, v_c, q2euler(uq), uq,  tau_b, z)
 
-        xS0 = vertcat(p_n, uq, x_nb)
+            xS0 = vertcat(p_n, uq, x_nb)
 
-        # integrator to discretize the system
-        sys = {}
-        sys['x'] = xS0
-        sys['u'] = tau_b
-        sys['p'] = ode_p
-        sys['ode'] = ode*dt # Time scaling
+            # integrator to discretize the system
+            sys = {}
+            sys['x'] = xS0
+            sys['u'] = tau_b
+            sys['p'] = ode_p
+            sys['ode'] = ode*dt # Time scaling
 
-        intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':5})
+            intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':5})
 
-        res = intg(x0=xS0,u=tau_b, p=ode_p) #evaluate with symbols
-        x_next = res['xf']
+            res = intg(x0=xS0,u=tau_b, p=ode_p) #evaluate with symbols
+            x_next = res['xf']
 
-        x_next[3:7] = x_next[3:7]/ca.sqrt(x_next[3:7].T@x_next[3:7])  #quaternions requires normalization
+            x_next[3:7] = x_next[3:7]/ca.sqrt(x_next[3:7].T@x_next[3:7])  #quaternions requires normalization
 
-        x_next[9] = ca.if_else(x_next[2] < 0, 0,  x_next[9]) # if vehicle on surface, no more up motion
-        x_next[2] = ca.if_else(x_next[2] < 0, 0,  x_next[2]) # if vehicle on surface, keep on surface and not go up
+            # x_next[9] = ca.if_else(x_next[2] < 0, 0,  x_next[9]) # if vehicle on surface, no more up motion
+            # x_next[2] = ca.if_else(x_next[2] < 0, 0,  x_next[2]) # if vehicle on surface, keep on surface and not go up
+
+        else:
+            xd = self.J_@x_nb
+            xdd = self.uv_body.body_forward_dynamics()
+
+            ode = vertcat(xd, xdd) #the complete ODE vector
+
+            xS0 = vertcat(n, x_nb) #states
+
+            # integrator to discretize the system
+            sys = {}
+            sys['x'] = xS0
+            sys['u'] = tau_b
+            sys['p'] = ode_p
+            sys['ode'] = ode*dt # Time scaling
+
+            intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':5})
+
+            res = intg(x0=xS0,u=tau_b, p=ode_p) #evaluate with symbols
+            x_next = res['xf']
+
+            # x_next[8] = ca.if_else(x_next[2] < 0, 0,  x_next[8]) # if vehicle on surface, no more up motion
+            # x_next[2] = ca.if_else(x_next[2] < 0, 0,  x_next[2]) # if vehicle on surface, keep on surface and not go up
 
         return x_next, xS0, tau_b, ode_p

@@ -102,7 +102,12 @@ dn  = vertcat(dp_n, deul)
 ddn  = vertcat(ddp_n, ddeul)
 
 eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
+d_eta,d_eps1,d_eps2,d_eps3 = SX.sym('deta'),SX.sym('deps1'),SX.sym('deps2'),SX.sym('deps3')
+dd_eta,dd_eps1,dd_eps2,dd_eps3 = SX.sym('ddeta'),SX.sym('ddeps1'),SX.sym('ddeps2'),SX.sym('ddeps3')
+
 uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
+duq = vertcat(d_eta,d_eps1,d_eps2,d_eps3) #first derivative unit quaternion
+dduq = vertcat(dd_eta,dd_eps1,dd_eps2,dd_eps3) #second derivative unit quaternion
 
 # deta = -0.5*(eps1*p + eps2*q + eps3*r)
 # deps1 = 0.5*(eta*p - eps3*q + eps2*r)
@@ -111,7 +116,8 @@ uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
 # duq = vertcat(deta,deps1,deps2,deps3) # differential unit quaternion
 
 nq = vertcat(p_n, uq)
-# dnq = vertcat(dp_n, uq)
+dnq = vertcat(dp_n, duq)
+ddnq = vertcat(ddp_n, dduq)
 ###################################################
 
 

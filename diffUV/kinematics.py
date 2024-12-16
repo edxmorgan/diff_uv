@@ -30,7 +30,6 @@ class Kinematics():
         self.J, self.R, self.T = T_eul.J_kin(eul)
         self.J_INV, self.R_INV, self.T_INV = T_eul.inv_J_kin(eul)
         self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
-        self.ned_state_vector = vertcat(n,dn)
 
         self.Jq, self.Rq, self.Tq = T_quat.Jq_kin(uq)
         self.Jq_INV, _,_ = T_quat.inv_Jq_kin(uq)
@@ -42,34 +41,34 @@ class Kinematics():
     def __repr__(self) -> str:
         return f'{super().__repr__()} Kinematics'
     
-    def ned_euler_vel(self):
+    def ned_euler_vel_from_body(self):
         _dn = self.J@v_r
         return _dn
 
-    def ned_euler_acc(self):
+    def ned_euler_acc_from_body(self):
         _ddn = self.J@self.v_rdot + self.J_dot@v_r
         return _ddn
     
-    def ned_quat_vel(self):
+    def ned_quat_vel_from_body(self):
         _dn_q = self.Jq@v_r
         return _dn_q
 
-    def ned_quat_acc(self):
+    def ned_quat_acc_from_body(self):
         _ddn_q = self.Jq@v_r + self.Jq_dot@v_r
         return _ddn_q
     
-    def body_position_from_euler(self):
+    def body_vel_from_ned_euler(self):
         v = self.J_INV@dn
         return v
     
-    def body_vel_from_euler(self):
+    def body_acc_from_ned_euler(self):
         dv = self.J_INV@(ddn - self.J_dot@self.J_INV@dn)
         return dv
     
-    def body_position_from_quat(self):
-        v = self.Jq_INV@dn
+    def body_vel_from_ned_quat(self):
+        v = self.Jq_INV@dnq
         return v
     
-    def body_vel_from_quat(self):
-        dv = self.Jq_INV@(ddn - self.Jq_dot@self.Jq_INV@dn)
+    def body_acc_from_ned_quat(self):
+        dv = self.Jq_INV@(ddnq - self.Jq_dot@self.Jq_INV@dnq)
         return dv

@@ -30,7 +30,6 @@ class DynamicsEuler(Base):
         self.J_INV, self.R_INV, self.T_INV = T_eul.inv_J_kin(eul)
         self.J_INV_T = self.J_INV.T
         self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
-        self.ned_state_vector = vertcat(n,dn)
 
     def __repr__(self) -> str:
         """Euler representation of the Dynamics instance  in ned frame"""
