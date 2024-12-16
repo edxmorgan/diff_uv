@@ -100,6 +100,8 @@ class Params:
 
     T = 20 # time horizon in seconds
     N = 1600 # number of control intervals
+    at_surface = 0.0
+    below_surface = 1.0 #random
     dt_s = T/N
     
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
