@@ -98,7 +98,7 @@ class Params:
     rg = np.array([0, 0, 0.02]) #(m). 
     rb = np.array([0, 0, 0]) #(m). center of buoyancy (CoB) coincides with the center of origin
 
-    T = 20 # time horizon in seconds
+    T = 70 # time horizon in seconds
     N = 1600 # number of control intervals
     at_surface = 0.0
     below_surface = 1.0 #random
