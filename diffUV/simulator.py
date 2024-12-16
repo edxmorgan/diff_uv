@@ -53,9 +53,6 @@ class Simulator():
                             coupled_added_m, linear_dc, quadratic_dc, x_nb, v_c, q2euler(uq), uq,  tau_b)
 
         xS0 = vertcat(p_n, uq, x_nb)
-        ode_p = vertcat(m, W, B, r_g, r_b, I_o,
-                                decoupled_added_m, coupled_added_m,
-                                linear_dc, quadratic_dc,  dt, v_c)
 
         # integrator to discretize the system
         sys = {}

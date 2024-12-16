@@ -93,3 +93,14 @@ class Params:
     Mqq = -1.55 #(Ns2/rad2). Pitch. 
     Nrr = -1.55 #(Ns2/rad2). Yaw. 
     quadratic_dc = np.array([Xuu, Yvv, Zww, Kpp, Mqq, Nrr])
+
+
+    rg = np.array([0, 0, 0.02]) #(m). 
+    rb = np.array([0, 0, 0]) #(m). center of buoyancy (CoB) coincides with the center of origin
+
+    T = 10 # time horizon in seconds
+    N = 1600 # number of control intervals
+    dt_s = T/N
+    
+    sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
+                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, np.array([dt_s]), v_flow))
