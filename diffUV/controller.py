@@ -18,8 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""This module contains a class for implementing a MIMO Nonlinear Position PID Controller from 
-fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
+"""This module contains a class for implementing a MIMO Nonlinear Controllers
 """
 from diffUV.kinematics import Kinematics as kin
 from diffUV.base import Base as dyn_body
@@ -32,20 +31,35 @@ class Controller():
         Kinematics = kin()
         self.J_ = Kinematics.J
         # body representaion
-        self.uv_body = dyn_body()
+        uv_body = dyn_body()
+        self.gn = uv_body.body_restoring_vector()
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
     
     def position_pid(self):
-        gn = self.uv_body.body_restoring_vector()
+
         ne = n - nd
 
         i_buffer = sum_e_buffer + ne*dt
 
         pid = -diag(Kp)@ne - diag(Kd)@(self.J_@x_nb) - diag(Ki)@i_buffer
 
-        pid_controller = gn + self.J_.T@pid
+        pid_controller = self.gn + self.J_.T@pid
 
         return pid_controller, i_buffer
+    
+    def velocity_pid(self):
+        ve = x_nb - vb_d
 
+        x_nb_prev = xS0_prev[6:]
+
+        dve = (x_nb_prev - x_nb)/dt
+
+        i_buffer = sum_e_buffer + ve*dt
+
+        v_pid = -diag(Kp)@ve - diag(Kd)@dve - diag(Ki)@i_buffer
+
+        pid_controller = self.gn + v_pid
+
+        return pid_controller, i_buffer

@@ -256,7 +256,8 @@ Ki = SX.sym('Ki',6,1)
 sum_e_buffer = SX.sym("sum_e_buffer", 6,1)
 nd = SX.sym('nd', 6,1)
 vb_d = SX.sym('vb_d', 6,1)
-xS0_prev = SX.sym('xS0_prev', 13,1)
+
+xS0_prev = SX.sym('xS0_prev', 12,1)
 
 
 
