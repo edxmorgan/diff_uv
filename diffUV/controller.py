@@ -18,11 +18,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# Whenever importing these scripts, names are defined here.
-from .base import Base as dyn_body #in body 
-# All below depend on .base. 
-from .kinematics import Kinematics as kin
-from .dynamics_euler import DynamicsEuler as dyned_eul #in ned
-from .dynamics_quat import DynamicsQuat as dyned_quat #in ned
-from .simulator import Simulator as simulator #in ned
-from .controller import Controller as control
+"""This module contains a class for implementing a MIMO Nonlinear Position PID Controller from 
+fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
+"""
+from diffUV.kinematics import Kinematics as kin
+from diffUV.base import Base as dyn_body
+from diffUV.utils.symbols import *
+import casadi as ca
+
+class Controller():
+    def __init__(self):
+        # ned kinematic transformation
+        Kinematics = kin()
+        self.J_ = Kinematics.J
+        # body representaion
+        self.uv_body = dyn_body()
+
+    def __repr__(self) -> str:
+        return f'{super().__repr__()} Simulator'
+    
+    def position_pid(self):
+        gn = self.uv_body.body_restoring_vector()
+        ne = n - nd
+
+        i_buffer = sum_e_buffer + ne*dt
+
+        pid = -diag(Kp)@ne - diag(Kd)@(self.J_@x_nb) - diag(Ki)@i_buffer
+
+        pid_controller = gn + self.J_.T@pid
+
+        return pid_controller, i_buffer
+

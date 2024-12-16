@@ -68,7 +68,6 @@ class Simulator():
             x_next = res['xf']
 
             x_next[3:7] = x_next[3:7]/ca.sqrt(x_next[3:7].T@x_next[3:7])  #quaternions requires normalization
-
         else:
             xd = self.J_@x_nb
             xdd = self.uv_body.body_forward_dynamics()
