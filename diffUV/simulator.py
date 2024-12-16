@@ -62,7 +62,7 @@ class Simulator():
             sys['p'] = ode_p
             sys['ode'] = ode*dt # Time scaling
 
-            intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':5})
+            intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':50})
 
             res = intg(x0=xS0,u=tau_b, p=ode_p) #evaluate with symbols
             x_next = res['xf']
@@ -83,7 +83,7 @@ class Simulator():
             sys['p'] = ode_p
             sys['ode'] = ode*dt # Time scaling
 
-            intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':5})
+            intg = ca.integrator('intg', 'rk', sys, 0, 1 , {'simplify':True, 'number_of_finite_elements':50})
 
             res = intg(x0=xS0,u=tau_b, p=ode_p) #evaluate with symbols
             x_next = res['xf']
