@@ -153,4 +153,3 @@ class Base(object):
         # tau = K@Tc@u
         tau = Tc@thru_u
         return tau
-        

@@ -130,6 +130,8 @@ I_yx = SX.sym('I_yx')  # product of inertia yx entry
 I_zy = SX.sym('I_zy')  # product of inertia zy entry
 I_yz = SX.sym('I_yz')  # product of inertia zy entry
 
+I_o = vertcat(I_x, I_y, I_z, I_xz) # EFFECTIVE rigid body inertia wrt body origin
+
 Ib_b = SX(3,3)
 Ib_b[0, :] = horzcat(I_x, -I_xy, -I_xz)
 Ib_b[1, :] = horzcat(-I_xy, I_y, -I_yz)
@@ -139,11 +141,12 @@ Ib_b[2, :] = horzcat(-I_xz, -I_yz, I_z)
 x_g = SX.sym('x_g')  # Center of gravity, x-axis wrt to the CO
 y_g = SX.sym('y_g')  # Center of gravity, y-axis wrt to the CO
 z_g = SX.sym('z_g')  # Center of gravity, z-axis wrt to the CO
-r_g = vertcat(x_g, y_g, z_g)
+r_g = vertcat(x_g, y_g, z_g) # center of gravity wrt body origin
 
 x_b = SX.sym('x_b')  # Center of buoyancy, x-axis
 y_b = SX.sym('y_b')  # Center of buoyancy, y-axis
 z_b = SX.sym('z_b')  # Center of buoyancy, z-axis
+r_b = vertcat(x_b, y_b, z_b) # center of buoyancy wrt body origin 
 
 X_du = SX.sym('X_du') # Added mass in surge
 X_dv = SX.sym('X_dv') # coupled Added mass in surge & sway
@@ -248,3 +251,17 @@ sum_e_buffer = SX.sym("sum_e_buffer", 6,1)
 nd = SX.sym('nd', 6,1)
 vb_d = SX.sym('vb_d', 6,1)
 xS0_prev = SX.sym('xS0_prev', 13,1)
+
+
+
+
+
+
+# OTHER EFFECTIVE PARAMETERS
+decoupled_added_m = vertcat(X_du, Y_dv, Z_dw, K_dp, M_dq, N_dr) # added mass in diagonals
+coupled_added_m =  vertcat(X_dq, Y_dp, M_du, K_dv) # effective added mass in non diagonals
+
+linear_dc = vertcat(X_u, Y_v, Z_w, K_p,  M_q, N_r) # linear damping coefficients
+quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping coefficients
+
+n0 = vertcat(n, dn) # state variables wrt ned
