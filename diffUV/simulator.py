@@ -69,9 +69,6 @@ class Simulator():
 
             x_next[3:7] = x_next[3:7]/ca.sqrt(x_next[3:7].T@x_next[3:7])  #quaternions requires normalization
 
-            # x_next[9] = ca.if_else(x_next[2] < 0, 0,  x_next[9]) # if vehicle on surface, no more up motion
-            # x_next[2] = ca.if_else(x_next[2] < 0, 0,  x_next[2]) # if vehicle on surface, keep on surface and not go up
-
         else:
             xd = self.J_@x_nb
             xdd = self.uv_body.body_forward_dynamics()
@@ -91,8 +88,5 @@ class Simulator():
 
             res = intg(x0=xS0,u=tau_b, p=ode_p) #evaluate with symbols
             x_next = res['xf']
-
-            # x_next[8] = ca.if_else(x_next[2] < 0, 0,  x_next[8]) # if vehicle on surface, no more up motion
-            # x_next[2] = ca.if_else(x_next[2] < 0, 0,  x_next[2]) # if vehicle on surface, keep on surface and not go up
 
         return x_next, xS0, tau_b, ode_p
