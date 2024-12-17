@@ -275,4 +275,9 @@ ode_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
                         linear_dc, quadratic_dc,  dt, v_c)
 
+id_p = vertcat(m, W, B, r_g, r_b, I_o,
+                        decoupled_added_m, coupled_added_m,
+                        linear_dc, quadratic_dc, v_c)
+
+
 # n0 = vertcat(n, dn) # state variables wrt ned

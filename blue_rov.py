@@ -109,3 +109,6 @@ class Params:
     
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
                                            rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, np.array([dt_s]), v_flow))
+    
+    id_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
+                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, v_flow))
