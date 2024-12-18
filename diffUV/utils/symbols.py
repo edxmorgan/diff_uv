@@ -271,11 +271,7 @@ coupled_added_m =  vertcat(X_dq, Y_dp, M_du, K_dv) # effective added mass in non
 linear_dc = vertcat(X_u, Y_v, Z_w, K_p,  M_q, N_r) # linear damping coefficients
 quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping coefficients
 
-ode_p = vertcat(m, W, B, r_g, r_b, I_o,
-                        decoupled_added_m, coupled_added_m,
-                        linear_dc, quadratic_dc,  dt, v_c)
-
-id_p = vertcat(m, W, B, r_g, r_b, I_o,
+sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
                         linear_dc, quadratic_dc, v_c)
 
