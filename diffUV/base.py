@@ -102,11 +102,8 @@ class Base(object):
         # essentially, the upward force of buoyancy is counteracted by the downward force of gravity, resulting in a stable floating
         # position at the water surface.
 
-        # Define a small epsilon to handle floating-point precision for z == 0.0
-        epsilon = 1e-8
-
         # Define buoyancy_conditions
-        b_condition1 = logic_and((B > W), (fabs(z) < epsilon))
+        b_condition1 = z == 0.0
         b_condition2 = z < 0.0
 
         # Define mB using nested if_else
