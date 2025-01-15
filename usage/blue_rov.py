@@ -49,7 +49,7 @@ class Params:
     ### Parameters in rigid body dynamics and restoring forces
     # Based on BlueRobotics 2018b technical specs. 
     # Based on Table 5.1
-    m = 110.5 #(kg)
+    m = 11.5 #(kg)
     W = m*9.81 #(N). 112.8 N. Weight. 
     B = 114.8 #(N). bouyancy 
     rb  = np.array([0, 0, 0]) #(m). center of buoyancy (CoB) coincides with the center of origin
