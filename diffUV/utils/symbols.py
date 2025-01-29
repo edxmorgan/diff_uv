@@ -259,7 +259,7 @@ vb_d = SX.sym('vb_d', 6,1)
 
 xS0_prev = SX.sym('xS0_prev', 12,1)
 
-
+f_ext = SX.sym('f_ext', 6, 1) # external forces
 
 
 
@@ -274,6 +274,7 @@ quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping c
 sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
                         linear_dc, quadratic_dc, v_c)
+
 
 
 # n0 = vertcat(n, dn) # state variables wrt ned

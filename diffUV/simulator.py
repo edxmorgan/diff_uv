@@ -40,7 +40,7 @@ class Simulator():
         return f'{super().__repr__()} Simulator'
     
     def model(self, rot_type='euler'):
-        ode_p = ca.vertcat(sim_p, dt)
+        ode_p = ca.vertcat(sim_p, dt, f_ext)
         if rot_type == 'quat':
             xd = self.Jq_@x_nb
             xdd = self.uv_body.body_forward_dynamics()
@@ -89,4 +89,4 @@ class Simulator():
             res = intg(x0=xS0,u=tau_b, p= ode_p) #evaluate with symbols
             x_next = res['xf']
 
-        return x_next, xS0, tau_b, sim_p, dt
+        return x_next, xS0, tau_b, sim_p, dt, f_ext
