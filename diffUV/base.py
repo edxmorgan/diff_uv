@@ -144,8 +144,8 @@ class Base(object):
     
     def control_Allocation(self):
         # u = inv(K)@pinv(Tc)@tau_b
-        u = pinv(Tc)@tau_b
-        return u
+        thruster_F = pinv(Tc)@tau_b
+        return thruster_F
     
     def thruster_input2generalized_Forces(self):
         # tau = K@Tc@u
