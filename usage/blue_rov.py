@@ -19,6 +19,9 @@
 # THE SOFTWARE.
 
 import numpy as np
+import casadi as ca
+import matplotlib.pyplot as plt
+import pandas as pd
 
 class Params:
 
@@ -109,3 +112,128 @@ class Params:
     
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
                                            rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, v_flow))
+    
+
+    # https://gist.github.com/edxmorgan/4d38ca349537a36214927f16359848a1
+
+
+    # ----------------------------
+    # User-specified parameters
+    # ----------------------------
+    forward_poly_order = 9    # Order for PWM -> Thrust mapping
+    reverse_poly_order = 25   # Order for Thrust -> PWM mapping
+    no_thrusters = 8          # Number of thrusters for CasADi mapping
+
+    # Define bounds for the forward mapping (PWM -> Thrust)
+    # (Adjust these values as appropriate for your system.)
+    pwm_input_lb = 1100.0  # Lower bound for PWM input
+    pwm_input_ub = 1900.0  # Upper bound for PWM input
+
+    # ----------------------------
+    # Read CSV file and convert thrust from Ibf (lbf) to Newtons (N)
+    # ----------------------------
+    csv = pd.read_csv('t200.csv')
+    conversion_factor = 4.44822
+    csv['thrust 16V'] = csv['thrust 16V'] * conversion_factor
+
+    # ----------------------------
+    # Forward mapping: PWM -> Thrust
+    # ----------------------------
+
+    # Extract data from CSV
+    x_pwm = csv['pwm 16V'].tolist()
+    y_thrust = csv['thrust 16V'].tolist()
+
+    # Fit a polynomial of user-specified order: PWM -> Thrust
+    coefs = np.polyfit(x_pwm, y_thrust, forward_poly_order)
+    ffit = np.polyval(coefs, x_pwm)
+
+    # Plot the forward mapping (raw data vs. fitted curve)
+    plt.figure(figsize=(10, 6))
+    plt.plot(x_pwm, y_thrust, 'bo', label='Original Data')
+    plt.plot(x_pwm, ffit, 'r-', label=f'Fitted Polynomial (order {forward_poly_order})')
+    plt.xlabel('PWM 16V')
+    plt.ylabel('Thrust (N)')
+    plt.legend()
+    plt.title('PWM to Thrust Conversion for bluerov T200 thruster')
+    plt.show()
+
+    # Calculate and print the RMS error for the forward mapping
+    RMS = np.sqrt(np.mean((np.array(ffit) - np.array(y_thrust))**2))
+    print("Forward mapping RMS error: {:.3f} N".format(RMS))
+
+    # Define output bounds for thrust based on the polynomial evaluated at the PWM bounds
+    thrust_output_lb = np.polyval(coefs, pwm_input_lb)
+    thrust_output_ub = np.polyval(coefs, pwm_input_ub)
+
+    # Create a CasADi function for the forward mapping with bounds.
+    # The input is first saturated (clipped) to [pwm_input_lb, pwm_input_ub],
+    # then the polynomial is evaluated, and the output is clipped to [thrust_output_lb, thrust_output_ub].
+    pwm = ca.SX.sym('pwm')
+
+    # Saturate the PWM input:
+    pwm_sat = ca.fmax(pwm_input_lb, ca.fmin(pwm, pwm_input_ub))
+
+    # Build the polynomial expression using the saturated input.
+    thrust_expr = 0
+    for i, coef in enumerate(coefs):
+        # Exponent decreases from forward_poly_order down to 0.
+        exponent = forward_poly_order - i
+        thrust_expr += coef * pwm_sat**exponent
+
+    # Saturate the output thrust:
+    thrust_bounded = ca.fmax(thrust_output_lb, ca.fmin(thrust_expr, thrust_output_ub))
+
+    # Create the forward mapping CasADi function and map it to no_thrusters.
+    pwm_to_thrust = ca.Function('pwm_to_thrust', [pwm], [thrust_bounded]).map(no_thrusters)
+
+    # ----------------------------
+    # Reverse mapping: Thrust -> PWM
+    # ----------------------------
+
+    # For the inverse mapping, we fit a polynomial with thrust as the independent variable.
+    inv_coefs = np.polyfit(y_thrust, x_pwm, reverse_poly_order)
+    ffit_inv = np.polyval(inv_coefs, y_thrust)
+
+    # Plot the reverse mapping (raw data vs. fitted curve)
+    plt.figure(figsize=(10, 6))
+    plt.plot(y_thrust, x_pwm, 'bo', label='Original Inverse Data')
+    plt.plot(y_thrust, ffit_inv, 'r-', label=f'Fitted Inverse Polynomial (order {reverse_poly_order})')
+    plt.xlabel('Thrust (N)')
+    plt.ylabel('PWM 16V')
+    plt.legend()
+    plt.title('Thrust to PWM Conversion for bluerov T200 thruster')
+    plt.show()
+
+    # Calculate and print the RMS error for the reverse mapping
+    RMS_inv = np.sqrt(np.mean((np.array(ffit_inv) - np.array(x_pwm))**2))
+    print("Reverse mapping RMS error: {:.3f}".format(RMS_inv))
+
+    # For the reverse mapping, set input bounds based on the thrust data.
+    # Here, we use the min and max values from the original thrust data.
+    thrust_input_lb = min(y_thrust)
+    thrust_input_ub = max(y_thrust)
+
+    # And output bounds for PWM based on the original PWM data.
+    pwm_output_lb = min(x_pwm)
+    pwm_output_ub = max(x_pwm)
+
+    # Create a CasADi function for the reverse mapping with bounds.
+    # The input thrust is clipped to [thrust_input_lb, thrust_input_ub],
+    # then the inverse polynomial is evaluated, and the output PWM is clipped to [pwm_output_lb, pwm_output_ub].
+    thrust = ca.SX.sym('thrust')
+
+    # Saturate the thrust input:
+    thrust_sat = ca.fmax(thrust_input_lb, ca.fmin(thrust, thrust_input_ub))
+
+    # Build the inverse polynomial expression using the saturated thrust input.
+    pwm_expr = 0
+    for i, coef in enumerate(inv_coefs):
+        exponent = reverse_poly_order - i
+        pwm_expr += coef * thrust_sat**exponent
+
+    # Saturate the PWM output:
+    pwm_bounded = ca.fmax(pwm_output_lb, ca.fmin(pwm_expr, pwm_output_ub))
+
+    # Create the reverse mapping CasADi function and map it to no_thrusters.
+    thrust_to_pwm = ca.Function('thrust_to_pwm', [thrust], [pwm_bounded]).map(no_thrusters)
