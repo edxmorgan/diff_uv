@@ -185,7 +185,7 @@ class Params:
     thrust_bounded = ca.fmax(thrust_output_lb, ca.fmin(thrust_expr, thrust_output_ub))
 
     # Create the forward mapping CasADi function and map it to no_thrusters.
-    pwm_to_thrust = ca.Function('pwm_to_thrust', [pwm], [thrust_bounded]).map(no_thrusters)
+    pwm_to_thrust = ca.Function('Pwm_to_thrust', [pwm], [thrust_bounded]).map(no_thrusters)
 
     # ----------------------------
     # Reverse mapping: Thrust -> PWM
@@ -236,4 +236,6 @@ class Params:
     pwm_bounded = ca.fmax(pwm_output_lb, ca.fmin(pwm_expr, pwm_output_ub))
 
     # Create the reverse mapping CasADi function and map it to no_thrusters.
-    thrust_to_pwm = ca.Function('thrust_to_pwm', [thrust], [pwm_bounded]).map(no_thrusters)
+    thrust_to_pwm = ca.Function('Thrust_to_pwm', [thrust], [pwm_bounded]).map(no_thrusters)
+    n_thrust = ca.SX.sym('thrust',8)
+    getNpwm_func = ca.Function('getNpwm', [n_thrust], [thrust_to_pwm(n_thrust)])
