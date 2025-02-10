@@ -132,6 +132,13 @@ class Base(object):
         D_v = linear_damping + nonlinear_damping
         return D_v
 
+    def get_bias(self):
+        C = self.body_coriolis_centripetal_matrix()@v_r
+        g = self.body_restoring_vector()
+        d = self.body_damping_matrix()@v_r
+        B = C + g + d - f_ext
+        return B
+
     # Solved for accel based on inv dyn. 
     def body_forward_dynamics(self):
         acc = inv(self.body_inertia_matrix())@(tau_b + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())

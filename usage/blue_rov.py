@@ -148,19 +148,19 @@ class Params:
     coefs = np.polyfit(x_pwm, y_thrust, forward_poly_order)
     ffit = np.polyval(coefs, x_pwm)
 
-    # Plot the forward mapping (raw data vs. fitted curve)
-    plt.figure(figsize=(10, 6))
-    plt.plot(x_pwm, y_thrust, 'bo', label='Original Data')
-    plt.plot(x_pwm, ffit, 'r-', label=f'Fitted Polynomial (order {forward_poly_order})')
-    plt.xlabel('PWM 16V')
-    plt.ylabel('Thrust (N)')
-    plt.legend()
-    plt.title('PWM to Thrust Conversion for bluerov T200 thruster')
-    plt.show()
+    # # Plot the forward mapping (raw data vs. fitted curve)
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(x_pwm, y_thrust, 'bo', label='Original Data')
+    # plt.plot(x_pwm, ffit, 'r-', label=f'Fitted Polynomial (order {forward_poly_order})')
+    # plt.xlabel('PWM 16V')
+    # plt.ylabel('Thrust (N)')
+    # plt.legend()
+    # plt.title('PWM to Thrust Conversion for bluerov T200 thruster')
+    # plt.show()
 
-    # Calculate and print the RMS error for the forward mapping
-    RMS = np.sqrt(np.mean((np.array(ffit) - np.array(y_thrust))**2))
-    print("Forward mapping RMS error: {:.3f} N".format(RMS))
+    # # Calculate and print the RMS error for the forward mapping
+    # RMS = np.sqrt(np.mean((np.array(ffit) - np.array(y_thrust))**2))
+    # print("Forward mapping RMS error: {:.3f} N".format(RMS))
 
     # Define output bounds for thrust based on the polynomial evaluated at the PWM bounds
     thrust_output_lb = np.polyval(coefs, pwm_input_lb)
@@ -195,19 +195,19 @@ class Params:
     inv_coefs = np.polyfit(y_thrust, x_pwm, reverse_poly_order)
     ffit_inv = np.polyval(inv_coefs, y_thrust)
 
-    # Plot the reverse mapping (raw data vs. fitted curve)
-    plt.figure(figsize=(10, 6))
-    plt.plot(y_thrust, x_pwm, 'bo', label='Original Inverse Data')
-    plt.plot(y_thrust, ffit_inv, 'r-', label=f'Fitted Inverse Polynomial (order {reverse_poly_order})')
-    plt.xlabel('Thrust (N)')
-    plt.ylabel('PWM 16V')
-    plt.legend()
-    plt.title('Thrust to PWM Conversion for bluerov T200 thruster')
-    plt.show()
+    # # Plot the reverse mapping (raw data vs. fitted curve)
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(y_thrust, x_pwm, 'bo', label='Original Inverse Data')
+    # plt.plot(y_thrust, ffit_inv, 'r-', label=f'Fitted Inverse Polynomial (order {reverse_poly_order})')
+    # plt.xlabel('Thrust (N)')
+    # plt.ylabel('PWM 16V')
+    # plt.legend()
+    # plt.title('Thrust to PWM Conversion for bluerov T200 thruster')
+    # plt.show()
 
     # Calculate and print the RMS error for the reverse mapping
-    RMS_inv = np.sqrt(np.mean((np.array(ffit_inv) - np.array(x_pwm))**2))
-    print("Reverse mapping RMS error: {:.3f}".format(RMS_inv))
+    # RMS_inv = np.sqrt(np.mean((np.array(ffit_inv) - np.array(x_pwm))**2))
+    # print("Reverse mapping RMS error: {:.3f}".format(RMS_inv))
 
     # For the reverse mapping, set input bounds based on the thrust data.
     # Here, we use the min and max values from the original thrust data.
