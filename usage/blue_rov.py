@@ -239,3 +239,66 @@ class Params:
     thrust_to_pwm = ca.Function('Thrust_to_pwm', [thrust], [pwm_bounded]).map(no_thrusters)
     n_thrust = ca.SX.sym('thrust',8)
     getNpwm_func = ca.Function('getNpwm', [n_thrust], [thrust_to_pwm(n_thrust)])
+
+
+    # ----------------------------
+    # Construct PWM -> RPM Mapping
+    # ----------------------------
+    # Choose a polynomial order for PWM -> RPM
+    rpm_poly_order = 11  # Adjust this as needed
+
+    # Extract PWM and RPM data from CSV
+    x_pwm_rpm = csv['pwm 16V'].values
+    y_rpm = csv['rpm 16V'].values
+
+    # Fit a polynomial of user-specified order: PWM -> RPM
+    rpm_coefs = np.polyfit(x_pwm_rpm, y_rpm, rpm_poly_order)
+    rpm_fit = np.polyval(rpm_coefs, x_pwm_rpm)
+
+    # (Optional) Plot the fitted polynomial vs. original data
+    # plt.figure(figsize=(10,6))
+    # plt.plot(x_pwm_rpm, y_rpm, 'bo', label='Raw RPM Data')
+    # plt.plot(x_pwm_rpm, rpm_fit, 'r-', label=f'Fitted Polynomial (order {rpm_poly_order})')
+    # plt.xlabel('PWM 16V')
+    # plt.ylabel('RPM')
+    # plt.legend()
+    # plt.title('PWM to RPM Conversion for bluerov T200 thruster')
+    # plt.show()
+
+    # Calculate and print RMS error for your own analysis (optional)
+    # RMS_rpm = np.sqrt(np.mean((rpm_fit - y_rpm)**2))
+    # print("PWM->RPM mapping RMS error: {:.3f} RPM".format(RMS_rpm))
+
+    # Define bounds for PWM input (these may be the same as for the thrust mapping)
+    pwm_input_lb = min(x_pwm_rpm)
+    pwm_input_ub = max(x_pwm_rpm)
+
+    # Optionally define known RPM bounds (if you have them), or base on polynomial extremes
+    # For example, if your thruster realistically spins from 0 to 5000 RPM:
+    rpm_output_lb = min(y_rpm) # or min(rpm_fit)
+    rpm_output_ub = max(y_rpm)   # or max(rpm_fit) or some known maximum
+
+    # Create the CasADi function for PWM -> RPM
+    pwm_sym = ca.SX.sym('pwm')
+    pwm_sat_rpm = ca.fmax(pwm_input_lb, ca.fmin(pwm_sym, pwm_input_ub))
+
+    # Build polynomial expression
+    rpm_expr = 0
+    for i, coef in enumerate(rpm_coefs):
+        exponent = rpm_poly_order - i
+        rpm_expr += coef * (pwm_sat_rpm ** exponent)
+
+    # (Optional) saturate output RPM if desired
+    rpm_bounded = ca.fmax(rpm_output_lb, ca.fmin(rpm_expr, rpm_output_ub))
+
+    # Convert RPM to rad/s = rpm_bounded * (2π / 60)
+    rad_expr = rpm_bounded * (2 * np.pi / 60.0)
+
+    # Create the function that maps a single PWM input to rad/s output
+    pwm_to_rads_single = ca.Function('pwm_to_rads_single', [pwm_sym], [rad_expr])  
+    # (Or replace [rad_expr] with [rad_bounded] if using extra saturation.)
+
+    # Map it across multiple thrusters
+    pwm_to_rads = pwm_to_rads_single.map(no_thrusters)
+    n_pwm_rad = ca.SX.sym('n_pwm_rad',8)
+    pwm_to_rads_func = ca.Function('pwm_to_rads', [n_pwm_rad], [pwm_to_rads(n_pwm_rad)])
