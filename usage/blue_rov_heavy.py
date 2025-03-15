@@ -61,31 +61,30 @@ class Params:
     # Based on Table 5.2. 
     X_du = 10.77#(kg). Surge. 
     Y_dv = 24.86 #(kg). Sway. 
-    Z_dw = 34.60 #(kg). Heave. 
-    
-    K_dp =  #(kg m2/rad). Roll.
-    M_dq = -0.12 #(kg m2/rad). Pitch. 
-    N_dr = -0.12 #(kg m2/rad). Yaw. 
+    Z_dw = 34.60 #(kg). Heave.  dive --> 34.60 or rise --> 22.45
+    K_dp = 0.103 #(kg m2/rad). Roll.
+    M_dq = 0.120 #(kg m2/rad). Pitch. 
+    N_dr = 0.120 #(kg m2/rad). Yaw. 
     added_m = np.array([X_du, Y_dv, Z_dw, K_dp, M_dq, N_dr])
 
     coupl_added_m = np.array([0, 0, 0, 0]) # ASSUMING decoupling motion
 
     # Linear damping coeffs. 
-    Xu = -4.03 #(Ns/m). Surge. 
-    Yv = -6.22 #(Ns/m). Sway.
-    Zw = -5.18 #(Ns/m). Heave.  
-    Kp = -0.07 #(Ns/rad). Roll.
-    Mq = -0.07 #(Ns/rad). Pitch.
-    Nr = -0.07 #(Ns/rad). Yaw. 
+    Xu = 38.95 #(Ns/m). Surge. 
+    Yv = 60.11 #(Ns/m). Sway.
+    Zw = 49.50 #(Ns/m). Heave.  rise --> 50.62
+    Kp = 0.0 #(Ns/rad). Roll.
+    Mq = 0.0 #(Ns/rad). Pitch.
+    Nr = 0.0 #(Ns/rad). Yaw. 
     linear_dc = np.array([Xu, Yv, Zw, Kp,  Mq, Nr])
 
     # Quadratic damping coeffs. 
-    Xuu = -18.18 #(Ns2/m2). Surge. 
-    Yvv = -21.66 #(Ns2/m2). Sway. 
-    Zww = -36.99 #(Ns2/m2). Heave. 
-    Kpp = -1.55 #(Ns2/rad2). Roll. 
-    Mqq = -1.55 #(Ns2/rad2). Pitch. 
-    Nrr = -1.55 #(Ns2/rad2). Yaw. 
+    Xuu = 31.01 #(Ns2/m2). Surge. 
+    Yvv = 36.95 #(Ns2/m2). Sway. 
+    Zww = 113.86 #(Ns2/m2). Heave. rise --> 76.69
+    Kpp = 2.08 #(Ns2/rad2). Roll. 
+    Mqq = 2.42 #(Ns2/rad2). Pitch. 
+    Nrr = 2.42 #(Ns2/rad2). Yaw. 
     quadratic_dc = np.array([Xuu, Yvv, Zww, Kpp, Mqq, Nrr])
 
 
