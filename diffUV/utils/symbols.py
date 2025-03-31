@@ -235,7 +235,8 @@ N_rr = SX.sym('N_rr') # quadratic Drag coefficient in yaw
 tau_b = SX.sym('tau_b',6,1) #body generalized forces and torque
 thru_u = SX.sym('thruForces',8,1) #thruster inputs
 
-K = SX.sym('k',8,8) #thrust coefficient matrix
+f_K = SX.sym('k',6,1) #force coefficients
+f_K_diag = diag(f_K) #force coefficients matrix
 Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
@@ -273,7 +274,7 @@ quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping c
 
 sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
-                        linear_dc, quadratic_dc, v_c)
+                        linear_dc, quadratic_dc, f_K, v_c)
 
 
 

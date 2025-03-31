@@ -141,12 +141,12 @@ class Base(object):
 
     # Solved for accel based on inv dyn. 
     def body_forward_dynamics(self):
-        acc = inv(self.body_inertia_matrix())@(tau_b + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
+        acc = inv(self.body_inertia_matrix())@(f_K_diag@tau_b + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
         return acc
 
     # G_0 missing bc underwater vehicle. No ballast control applicable. Eq. 6.4. 
     def body_inverse_dynamics(self):
-        resultant_torque = -f_ext + self.body_inertia_matrix()@self.v_rdot + self.body_coriolis_centripetal_matrix()@v_r + self.body_damping_matrix()@(v_r) + self.body_restoring_vector() 
+        resultant_torque = inv(f_K_diag)@(-f_ext + self.body_inertia_matrix()@self.v_rdot + self.body_coriolis_centripetal_matrix()@v_r + self.body_damping_matrix()@(v_r) + self.body_restoring_vector())
         return resultant_torque
     
     def control_Allocation(self):

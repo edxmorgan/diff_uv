@@ -46,8 +46,8 @@ class Params:
                             [0.06, 0.06, -0.06, -0.06, 0.12, -0.12, 0.12, -0.12],
                             [-0.1888, 0.1888, 0.1888, -0.1888, 0.0, 0.0, 0.0, 0.0]])
     
-    # Thrust coefficient matrix
-    K = np.diag([40, 40, 40, 40, 40, 40, 40, 40])
+    # force coefficient matrix
+    f_K_diag = np.array([1, 1, 1, 1, 1, 1])
 
     ### Parameters in rigid body dynamics and restoring forces
     # Based on BlueRobotics 2018b technical specs. 
@@ -100,7 +100,7 @@ class Params:
     rg = np.array([0, 0, 0.02]) #(m). 
     rb = np.array([0, 0, 0]) #(m). center of buoyancy (CoB) coincides with the center of origin
 
-    T = 70 # time horizon in seconds
+    T = 20 # time horizon in seconds
     N = 1600 # number of control intervals
     at_surface = 0.0
     below_surface = 1.0 #random
@@ -111,7 +111,7 @@ class Params:
     kd = np.array([2, 2, 2, 2, 2, 2])
     
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
-                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, v_flow))
+                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, f_K_diag, v_flow))
     
 
     # https://gist.github.com/edxmorgan/4d38ca349537a36214927f16359848a1
@@ -195,19 +195,19 @@ class Params:
     inv_coefs = np.polyfit(y_thrust, x_pwm, reverse_poly_order)
     ffit_inv = np.polyval(inv_coefs, y_thrust)
 
-    # # Plot the reverse mapping (raw data vs. fitted curve)
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(y_thrust, x_pwm, 'bo', label='Original Inverse Data')
-    # plt.plot(y_thrust, ffit_inv, 'r-', label=f'Fitted Inverse Polynomial (order {reverse_poly_order})')
-    # plt.xlabel('Thrust (N)')
-    # plt.ylabel('PWM 16V')
-    # plt.legend()
-    # plt.title('Thrust to PWM Conversion for bluerov T200 thruster')
-    # plt.show()
+    # Plot the reverse mapping (raw data vs. fitted curve)
+    plt.figure(figsize=(10, 6))
+    plt.plot(y_thrust, x_pwm, 'bo', label='Original Inverse Data')
+    plt.plot(y_thrust, ffit_inv, 'r-', label=f'Fitted Inverse Polynomial (order {reverse_poly_order})')
+    plt.xlabel('Thrust (N)')
+    plt.ylabel('PWM 16V')
+    plt.legend()
+    plt.title('Thrust to PWM Conversion for bluerov T200 thruster')
+    plt.show()
 
     # Calculate and print the RMS error for the reverse mapping
-    # RMS_inv = np.sqrt(np.mean((np.array(ffit_inv) - np.array(x_pwm))**2))
-    # print("Reverse mapping RMS error: {:.3f}".format(RMS_inv))
+    RMS_inv = np.sqrt(np.mean((np.array(ffit_inv) - np.array(x_pwm))**2))
+    print("Reverse mapping RMS error: {:.3f}".format(RMS_inv))
 
     # For the reverse mapping, set input bounds based on the thrust data.
     # Here, we use the min and max values from the original thrust data.
@@ -255,19 +255,19 @@ class Params:
     rpm_coefs = np.polyfit(x_pwm_rpm, y_rpm, rpm_poly_order)
     rpm_fit = np.polyval(rpm_coefs, x_pwm_rpm)
 
-    # (Optional) Plot the fitted polynomial vs. original data
-    # plt.figure(figsize=(10,6))
-    # plt.plot(x_pwm_rpm, y_rpm, 'bo', label='Raw RPM Data')
-    # plt.plot(x_pwm_rpm, rpm_fit, 'r-', label=f'Fitted Polynomial (order {rpm_poly_order})')
-    # plt.xlabel('PWM 16V')
-    # plt.ylabel('RPM')
-    # plt.legend()
-    # plt.title('PWM to RPM Conversion for bluerov T200 thruster')
-    # plt.show()
+    # Plot the fitted polynomial vs. original data
+    plt.figure(figsize=(10,6))
+    plt.plot(x_pwm_rpm, y_rpm, 'bo', label='Raw RPM Data')
+    plt.plot(x_pwm_rpm, rpm_fit, 'r-', label=f'Fitted Polynomial (order {rpm_poly_order})')
+    plt.xlabel('PWM 16V')
+    plt.ylabel('RPM')
+    plt.legend()
+    plt.title('PWM to RPM Conversion for bluerov T200 thruster')
+    plt.show()
 
-    # Calculate and print RMS error for your own analysis (optional)
-    # RMS_rpm = np.sqrt(np.mean((rpm_fit - y_rpm)**2))
-    # print("PWM->RPM mapping RMS error: {:.3f} RPM".format(RMS_rpm))
+    # Calculate and print RMS error for your own analysis 
+    RMS_rpm = np.sqrt(np.mean((rpm_fit - y_rpm)**2))
+    print("PWM->RPM mapping RMS error: {:.3f} RPM".format(RMS_rpm))
 
     # Define bounds for PWM input (these may be the same as for the thrust mapping)
     pwm_input_lb = min(x_pwm_rpm)
