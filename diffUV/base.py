@@ -20,7 +20,7 @@
 
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
-from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, logic_and
+from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, tanh
 from platform import machine, system
 
 from diffUV.utils import operators as ops
@@ -103,11 +103,11 @@ class Base(object):
         # position at the water surface.
 
         # Define buoyancy_conditions
-        b_condition1 = z == 0.0
+        b_condition1 = z == -0.1
         b_condition2 = z < 0.0
 
         # Define mB using nested if_else
-        mB = if_else(b_condition1, W, if_else(b_condition2, 0.0, B))
+        mB = if_else(b_condition1, W, if_else(b_condition2, 0.0, B)) #avoiding this for Smooth Transition 
 
         g = SX(6, 1)
         g[0, 0] = (W - mB)*sin(thet)
