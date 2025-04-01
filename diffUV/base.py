@@ -103,7 +103,7 @@ class Base(object):
         # position at the water surface.
 
         # Define buoyancy_conditions
-        b_condition1 = z == -0.1
+        b_condition1 = z == 0.0
         b_condition2 = z < 0.0
 
         # Define mB using nested if_else
