@@ -237,6 +237,7 @@ thru_u = SX.sym('thruForces',8,1) #thruster inputs
 
 f_K = SX.sym('k',6,1) #force coefficients
 f_K_diag = diag(f_K) #force coefficients matrix
+T_db = SX.sym('T_db', 6,1) #torque deadband
 Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
@@ -274,7 +275,7 @@ quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping c
 
 sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
-                        linear_dc, quadratic_dc, f_K, v_c)
+                        linear_dc, quadratic_dc, f_K, T_db, v_c)
 
 
 
