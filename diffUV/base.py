@@ -20,7 +20,7 @@
 
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
-from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, tanh
+from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, sign
 from platform import machine, system
 
 from diffUV.utils import operators as ops
@@ -139,22 +139,35 @@ class Base(object):
         B = C + g + d - f_ext
         return B
 
+    def compute_deadband_term(self, tau, delta):
+        return if_else(fabs(tau) <= fabs(delta), 0 , tau + (-sign(tau) * fabs(delta)))
+    
     # Solved for accel based on inv dyn. 
     def body_forward_dynamics(self):
-        acc = inv(self.body_inertia_matrix())@(f_K_diag@tau_b + T_db + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
+        """
+        Calculate body accelerations based on inverse dynamics.
+        """
+        # Compute the deadband term for the current control torque.
+        # tau_b_ = SX.zeros(6,1)
+        # for i in range(tau_b.size1()):
+        #     tau_b_[i] = self.compute_deadband_term(tau_b[i], T_db[i])
+        
+        scaled_input = f_K_diag@tau_b - (sign(tau_b) * fabs(T_db))
+        acc = inv(self.body_inertia_matrix())@(scaled_input + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
         return acc
 
-    # G_0 missing bc underwater vehicle. No ballast control applicable. Eq. 6.4. 
     def body_inverse_dynamics(self):
-        resultant_torque = inv(f_K_diag)@(-T_db -f_ext + self.body_inertia_matrix()@self.v_rdot + self.body_coriolis_centripetal_matrix()@v_r + self.body_damping_matrix()@(v_r) + self.body_restoring_vector())
-        return resultant_torque
+        """
+        Calculate the required torque (resultant torque) based on the desired acceleration,
+        using inverse dynamics.
+        """
+        resultant_torque = inv(f_K_diag)@(-f_ext + self.body_inertia_matrix()@self.v_rdot + self.body_coriolis_centripetal_matrix()@v_r + self.body_damping_matrix()@(v_r) + self.body_restoring_vector())
+        return resultant_torque 
     
     def control_Allocation(self):
-        # u = inv(K)@pinv(Tc)@tau_b
         thruster_F = pinv(Tc)@tau_b
         return thruster_F
     
     def thruster_input2generalized_Forces(self):
-        # tau = K@Tc@u
         tau = Tc@thru_u
         return tau
