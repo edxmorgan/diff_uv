@@ -235,7 +235,7 @@ N_rr = SX.sym('N_rr') # quadratic Drag coefficient in yaw
 tau_b = SX.sym('tau_b',6,1) #body generalized forces and torque
 thru_u = SX.sym('thruForces',8,1) #thruster inputs
 
-f_K = SX.sym('k',6,1) #force coefficients
+f_K = SX.sym('f_K',6,1) #force coefficients
 f_K_diag = diag(f_K) #force coefficients matrix
 T_db = SX.sym('T_db', 6,1) #torque deadband
 Tc = SX.sym('T',6,8) #thruster configuration
