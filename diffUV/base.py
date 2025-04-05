@@ -139,20 +139,18 @@ class Base(object):
         B = C + g + d - f_ext
         return B
 
-    def compute_deadband_term(self, tau, delta):
-        return if_else(fabs(tau) <= fabs(delta), 0 , tau + (-sign(tau) * fabs(delta)))
+    def scale_input(self, _K_T, tau_b, T_db):
+        return if_else(fabs(tau_b) <= fabs(T_db), 0 , _K_T@tau_b - (sign(tau_b) * fabs(T_db)))
     
     # Solved for accel based on inv dyn. 
     def body_forward_dynamics(self):
         """
         Calculate body accelerations based on inverse dynamics.
         """
-        # Compute the deadband term for the current control torque.
-        # tau_b_ = SX.zeros(6,1)
-        # for i in range(tau_b.size1()):
-        #     tau_b_[i] = self.compute_deadband_term(tau_b[i], T_db[i])
-        
-        scaled_input = f_K_diag@tau_b - (sign(tau_b) * fabs(T_db))
+        scaled_input = SX.zeros(6,1)
+        for i in range(6):
+            scaled_input[i] = self.scale_input(f_K[i], tau_b[i], T_db[i])
+
         acc = inv(self.body_inertia_matrix())@(scaled_input + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
         return acc
 
