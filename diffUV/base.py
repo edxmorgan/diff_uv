@@ -20,7 +20,7 @@
 
 """This module contains a class for implementing fossen_thor_i_handbook_of_marine_craft_hydrodynamics_and_motion_control
 """
-from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, sign
+from casadi import SX, inv, sin,cos, fabs, diag, pinv,substitute, if_else, sign, tanh
 from platform import machine, system
 
 from diffUV.utils import operators as ops
@@ -94,33 +94,65 @@ class Base(object):
         C = coriolis_lag_param(M, v_r)
         return C
 
+    # def body_restoring_vector(self):
+    #     """Compute and return the hydrostatic restoring forces."""
+
+    #     # A positively buoyant object doesn't "fly out" of water when it reaches the surface because once it reaches the water level,
+    #     # the buoyant force acting on it becomes equal to its weight, creating a balance and preventing further upward movement; 
+    #     # essentially, the upward force of buoyancy is counteracted by the downward force of gravity, resulting in a stable floating
+    #     # position at the water surface.
+
+    #     # Define buoyancy_conditions
+    #     b_condition1 = z == 0.0
+    #     b_condition2 = z < 0.0
+
+    #     # Define mB using nested if_else
+    #     mB = if_else(b_condition1, W, if_else(b_condition2, 0.0, B)) #avoid this for Smooth Transition 
+
+    #     g = SX(6, 1)
+    #     g[0, 0] = (W - mB)*sin(thet)
+    #     g[1, 0] = -(W - mB)*cos(thet)*sin(phi)
+    #     g[2, 0] = -(W - mB)*cos(thet)*cos(phi)
+    #     g[3, 0] = -(y_g*W - y_b*mB)*cos(thet)*cos(phi) + \
+    #         (z_g*W - z_b*mB)*cos(thet)*sin(phi)
+    #     g[4, 0] = (z_g*W - z_b*mB)*sin(thet) + \
+    #         (x_g*W - x_b*mB)*cos(thet)*cos(phi)
+    #     g[5, 0] = -(x_g*W - x_b*mB)*cos(thet) * \
+    #         sin(phi) - (y_g*W - y_b*mB)*sin(thet)
+
+    #     return g
+
     def body_restoring_vector(self):
-        """Compute and return the hydrostatic restoring forces."""
+        """Compute and return the hydrostatic restoring forces with a smooth dynamic transition.
+        
+        This implementation keeps the original if_else structure but makes the effective values 
+        in the buoyancy computation dynamic. In particular, the constant B is replaced by 
+        a dynamic variable that smoothly transitions from W at the water surface (z = 0) 
+        to B when above the water, over a small region defined by B_eps.
+        """
+        # When the object is just above the water surface (0 <= z < eps),
+        # B_dynamic linearly interpolates between W (at z=0) and B (at z=eps).
+        B_dynamic = if_else(z < B_eps, W + (B - W) * (z / B_eps), B)
 
-        # A positively buoyant object doesn't "fly out" of water when it reaches the surface because once it reaches the water level,
-        # the buoyant force acting on it becomes equal to its weight, creating a balance and preventing further upward movement; 
-        # essentially, the upward force of buoyancy is counteracted by the downward force of gravity, resulting in a stable floating
-        # position at the water surface.
+        # Use the original structure:
+        #   - If z == 0, set mB to the (dynamic) W value (which is just W).
+        #   - If z < 0, then mB is 0.
+        #   - Otherwise (z > 0), use the smooth dynamic value B_dynamic.
+        mB = if_else(z == 0.0, W, if_else(z < 0.0, 0.0, B_dynamic))
 
-        # Define buoyancy_conditions
-        b_condition1 = z == 0.0
-        b_condition2 = z < 0.0
-
-        # Define mB using nested if_else
-        mB = if_else(b_condition1, W, if_else(b_condition2, 0.0, B)) #avoiding this for Smooth Transition 
-
+        # Compute the hydrostatic restoring force vector g.
+        # The net force magnitude is based on the difference (W - mB),
+        # and the directional components use the angles thet and phi.
         g = SX(6, 1)
-        g[0, 0] = (W - mB)*sin(thet)
-        g[1, 0] = -(W - mB)*cos(thet)*sin(phi)
-        g[2, 0] = -(W - mB)*cos(thet)*cos(phi)
-        g[3, 0] = -(y_g*W - y_b*mB)*cos(thet)*cos(phi) + \
-            (z_g*W - z_b*mB)*cos(thet)*sin(phi)
-        g[4, 0] = (z_g*W - z_b*mB)*sin(thet) + \
-            (x_g*W - x_b*mB)*cos(thet)*cos(phi)
-        g[5, 0] = -(x_g*W - x_b*mB)*cos(thet) * \
-            sin(phi) - (y_g*W - y_b*mB)*sin(thet)
+        g[0, 0] = (W - mB) * sin(thet)
+        g[1, 0] = -(W - mB) * cos(thet) * sin(phi)
+        g[2, 0] = -(W - mB) * cos(thet) * cos(phi)
+        g[3, 0] = -(y_g * W - y_b * mB) * cos(thet) * cos(phi) + (z_g * W - z_b * mB) * cos(thet) * sin(phi)
+        g[4, 0] = (z_g * W - z_b * mB) * sin(thet) + (x_g * W - x_b * mB) * cos(thet) * cos(phi)
+        g[5, 0] = -(x_g * W - x_b * mB) * cos(thet) * sin(phi) - (y_g * W - y_b * mB) * sin(thet)
 
         return g
+
 
      # D(v_r) Eq 8.10. Vehicle is performing non-coupled motion. 
     def body_damping_matrix(self):
