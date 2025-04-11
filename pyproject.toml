@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+  {name = "Edward Morgan", email = "edmorgangh@gmail.com"}
+]
+maintainers = [
+  {name = "Edward Morgan", email = "edmorgangh@gmail.com"}
+]
+description = "A differentiable Underwater vehicles dynamic model with actuation in all DOFs and can control the position and attitude in 6 DOFs"
+dynamic = ["version"]
+name = "diffUV"
+dependencies = [
+  "casadi"
+]
+requires-python = ">= 3.8"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["dynamics", "differentiation", "underwater vehicle", "robotics", "jacobian"]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Repository = "https://github.com/Eddy-Morgan/Diff_UV.git"
