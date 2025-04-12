@@ -44,17 +44,18 @@ class Controller():
 
         return pid_controller, i_buffer
     
-    def velocity_pid(self):
-        ve = x_nb - vb_d
+    # not tested enough
+    # def velocity_pid(self):
+    #     ve = x_nb - vb_d
 
-        x_nb_prev = xS0_prev[6:]
+    #     x_nb_prev = xS0_prev[6:]
 
-        dve = (x_nb_prev - x_nb)/dt
+    #     dve = (x_nb_prev - x_nb)/dt
 
-        i_buffer = sum_e_buffer + ve*dt
+    #     i_buffer = sum_e_buffer + ve*dt
 
-        v_pid = -diag(Kp)@ve - diag(Kd)@dve - diag(Ki)@i_buffer
+    #     v_pid = -diag(Kp)@ve - diag(Kd)@dve - diag(Ki)@i_buffer
 
-        pid_controller = self.gn + v_pid
+    #     pid_controller = self.gn + v_pid
 
-        return pid_controller, i_buffer
+    #     return pid_controller, i_buffer
