@@ -148,11 +148,15 @@ class Base(object):
         """
         scaled_input = SX.zeros(6,1)
         for i in range(6):
-            scaled_input[i] = self.scale_input(f_K[i], tau_b[i], T_db[i])
+            if i == 2:
+                T_db_i = if_else(tau_b[i] < 0, T_db[i], T_db[i]+W_B_bias)
+            else:
+                T_db_i = T_db[i]
+            scaled_input[i] = self.scale_input(f_K[i], tau_b[i], T_db_i)
 
         acc = inv(self.body_inertia_matrix())@(scaled_input + f_ext - self.body_coriolis_centripetal_matrix()@v_r - self.body_damping_matrix()@v_r - self.body_restoring_vector())
         return acc
-
+    
     def body_inverse_dynamics(self):
         """
         Calculate the required torque (resultant torque) based on the desired acceleration,

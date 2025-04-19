@@ -49,7 +49,8 @@ class Params:
     # force coefficient matrix
     f_K_diag = np.array([1, 1, 1, 1, 1, 1])
     T_db = np.array([0, 0, 0, 0, 0, 0])
-    B_eps = 3
+    B_eps = np.array([3])
+    W_B_bias  = np.array([0.0]) # weight and buoyancy bias.
     ### Parameters in rigid body dynamics and restoring forces
     # Based on BlueRobotics 2018b technical specs. 
     # Based on Table 5.1
@@ -112,7 +113,7 @@ class Params:
     kd = np.array([2, 2, 2, 2, 2, 2])
     
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
-                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, np.array([B_eps]), f_K_diag, T_db, v_flow))
+                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, W_B_bias, B_eps, f_K_diag, T_db, v_flow))
     
 
     # https://gist.github.com/edxmorgan/4d38ca349537a36214927f16359848a1

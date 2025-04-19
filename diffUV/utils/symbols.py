@@ -42,6 +42,7 @@ dx_nb = vertcat(dv_nb, dw_nb) # body-fixed accel.
 
 # width of the W and B transition zone
 B_eps = SX.sym('B_eps')
+W_B_bias = SX.sym('W_B_bias')
 
 # From Eq. 6.1. Irrotational ocean currents. 
  # Current/flow velocity
@@ -273,7 +274,7 @@ quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping c
 
 sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
-                        linear_dc, quadratic_dc, B_eps, f_K, T_db, v_c)
+                        linear_dc, quadratic_dc, W_B_bias, B_eps, f_K, T_db, v_c)
 
 
 
