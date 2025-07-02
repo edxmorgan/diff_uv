@@ -12,3 +12,5 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+from .torch_ops import cross_pO as torch_cross_pO, coriolis_lag_param as torch_coriolis_lag_param
