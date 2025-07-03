@@ -22,3 +22,4 @@ from .dynamics_quat import DynamicsQuat as dyned_quat #in ned
 from .simulator import Simulator as simulator #in ned
 from .controller import Controller as control
 from .torch_dynamics import TorchDynamics, VehicleParams
+from .casadi_dynamics import CasadiDynamics
