@@ -90,3 +90,37 @@ class VehicleTorchDynamics(nn.Module):
     def body_coriolis_centripetal_matrix(self, v_r: torch.Tensor) -> torch.Tensor:
         M = self.body_inertia_matrix()
         return coriolis_lag_param(M, v_r)
+    
+    def body_restoring_vector(self, angles: torch.Tensor) -> torch.Tensor:
+        phi, thet, _ = angles
+        W = self.weight
+        B = self.buoyancy
+        x_g, y_g, z_g = self.cog
+        x_b, y_b, z_b = self.cob
+
+        g = torch.zeros(6, dtype=angles.dtype)
+        g[0] = (W - B) * torch.sin(thet)
+        g[1] = -(W - B) * torch.cos(thet) * torch.sin(phi)
+        g[2] = -(W - B) * torch.cos(thet) * torch.cos(phi)
+        g[3] = -(y_g * W - y_b * B) * torch.cos(thet) * torch.cos(phi) + (
+            z_g * W - z_b * B
+        ) * torch.cos(thet) * torch.sin(phi)
+        g[4] = (z_g * W - z_b * B) * torch.sin(thet) + (
+            x_g * W - x_b * B
+        ) * torch.cos(thet) * torch.cos(phi)
+        g[5] = -(x_g * W - x_b * B) * torch.cos(thet) * torch.sin(phi) - (
+            y_g * W - y_b * B
+        ) * torch.sin(thet)
+        return g
+
+    def body_damping_matrix(self, v_r: torch.Tensor) -> torch.Tensor:
+        lin = -torch.diag(self.linear_damping)
+        non = -torch.diag(self.quadratic_damping * torch.abs(v_r))
+        return lin + non
+    
+    def get_bias(self, angles: torch.Tensor, v_r: torch.Tensor, f_ext: Optional[torch.Tensor] = torch.zeros(6)) -> torch.Tensor:
+        C = self.body_coriolis_centripetal_matrix(v_r)@v_r
+        g = self.body_restoring_vector(angles)
+        d = self.body_damping_matrix(v_r)@v_r
+        B = C + g + d - f_ext
+        return B
