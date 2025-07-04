@@ -66,7 +66,14 @@ class Params:
     I_y = 0.16 #(kg m2)
     I_z = 0.16 #(kg m2)
     I_xz = 0
+    I_yz = 0
+    I_xy = 0
     Io = np.array([I_x, I_y, I_z, I_xz])
+
+    Ib_b = np.zeros((3,3))
+    Ib_b[0, :] = [I_x, -I_xy, -I_xz]
+    Ib_b[1, :] = [-I_xy, I_y, -I_yz]
+    Ib_b[2, :] = [-I_xz, -I_yz, I_z]
 
     # Added mass parameters.
     # Based on Table 5.2. 
@@ -77,6 +84,15 @@ class Params:
     M_dq = -0.12 #(kg m2/rad). Pitch. 
     N_dr = -0.12 #(kg m2/rad). Yaw. 
     added_m = np.array([X_du, Y_dv, Z_dw, K_dp, M_dq, N_dr])
+
+    _MA = np.zeros((6, 6))
+    _MA[0, :] = [X_du, 0, 0, 0, 0, 0]
+    _MA[1, :] = [0, Y_dv, 0, 0, 0, 0]
+    _MA[2, :] = [0, 0, Z_dw, 0, 0, 0]
+    _MA[3, :] = [0, 0, 0, K_dp, 0, 0]
+    _MA[4, :] = [0, 0, 0, 0, M_dq, 0]
+    _MA[5, :] = [0, 0, 0, 0, 0, N_dr]
+    MA = -_MA
 
     coupl_added_m = np.array([0, 0, 0, 0]) # ASSUMING decoupling motion
 

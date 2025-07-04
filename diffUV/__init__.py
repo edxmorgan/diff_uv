@@ -21,3 +21,5 @@ from .dynamics_euler import DynamicsEuler as dyned_eul #in ned
 from .dynamics_quat import DynamicsQuat as dyned_quat #in ned
 from .simulator import Simulator as simulator #in ned
 from .controller import Controller as control
+from .torch_base import VehicleParams as nnVehicleParams
+from .torch_base import VehicleTorchDynamics as nnVehicleDynamics
