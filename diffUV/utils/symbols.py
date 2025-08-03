@@ -40,9 +40,9 @@ dw_nb = vertcat(dp, dq, dr)
 x_nb = vertcat(v_nb, w_nb) # body-fixed velocity 
 dx_nb = vertcat(dv_nb, dw_nb) # body-fixed accel.
 
-# width of the W and B transition zone
-B_eps = SX.sym('B_eps')
-W_B_bias = SX.sym('W_B_bias')
+# # width of the W and B transition zone
+# B_eps = SX.sym('B_eps')
+# W_B_bias = SX.sym('W_B_bias')
 
 # From Eq. 6.1. Irrotational ocean currents. 
  # Current/flow velocity
@@ -233,10 +233,6 @@ N_rr = SX.sym('N_rr') # quadratic Drag coefficient in yaw
 ###################################################################
 tau_b = SX.sym('tau_b',6,1) #body generalized forces and torque
 thru_u = SX.sym('thruForces',8,1) #thruster inputs
-
-f_K = SX.sym('f_K',6,1) #force coefficients
-f_K_diag = diag(f_K) #force coefficients matrix
-T_db = SX.sym('T_db', 6,1) #torque deadband
 Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
@@ -274,7 +270,7 @@ quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping c
 
 sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
-                        linear_dc, quadratic_dc, W_B_bias, B_eps, f_K, T_db, v_c)
+                        linear_dc, quadratic_dc, v_c)
 
 
 

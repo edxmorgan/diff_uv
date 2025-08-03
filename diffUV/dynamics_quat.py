@@ -25,7 +25,6 @@ class DynamicsQuat(Base):
         self.Jq_INV, _,_ = T_quat.inv_Jq_kin(uq)
         self.Jq_INV_T = self.Jq_INV.T
         self.Jq_dot, self.dRq ,self.dTq = T_quat.Jq_dot(uq, w_nb)
-        # self.state_vector = vertcat(uq,..)
 
     def __repr__(self) -> str:
         """Quaternion representation of the Dynamics instance in ned frame"""
