@@ -51,7 +51,7 @@ rich==13.7.1
 six==1.16.0
 stack-data==0.6.3
 sympy==1.12.1
-tornado==6.4
+tornado==6.5
 traitlets==5.14.3
 twine==5.0.0
 typing_extensions==4.12.1
