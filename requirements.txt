@@ -55,6 +55,6 @@ tornado==6.5
 traitlets==5.14.3
 twine==5.0.0
 typing_extensions==4.12.1
-urllib3==2.2.1
+urllib3==2.5.0
 wcwidth==0.2.13
 zipp==3.18.1
