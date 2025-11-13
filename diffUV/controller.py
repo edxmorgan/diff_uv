@@ -27,35 +27,19 @@ class Controller():
         self.J_ = Kinematics.J
         # body representaion
         uv_body = dyn_body()
-        self.gn = uv_body.body_restoring_vector()
+        mB = uv_body.surface_interaction(z, W, B, B_eps=3.0)
+        self.gn = uv_body.body_restoring_vector(mB)
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
     
     def position_pid(self):
-
-        ne = n - nd
+        ne = nd - n
 
         i_buffer = sum_e_buffer + ne*dt
 
-        pid = -diag(Kp)@ne - diag(Kd)@(self.J_@x_nb) - diag(Ki)@i_buffer
+        pid = diag(Kp)@ne + diag(Ki)@i_buffer - diag(Kd)@(self.J_@x_nb)
 
         pid_controller = self.gn + self.J_.T@pid
 
         return pid_controller, i_buffer
-    
-    # not tested enough
-    # def velocity_pid(self):
-    #     ve = x_nb - vb_d
-
-    #     x_nb_prev = xS0_prev[6:]
-
-    #     dve = (x_nb_prev - x_nb)/dt
-
-    #     i_buffer = sum_e_buffer + ve*dt
-
-    #     v_pid = -diag(Kp)@ve - diag(Kd)@dve - diag(Ki)@i_buffer
-
-    #     pid_controller = self.gn + v_pid
-
-    #     return pid_controller, i_buffer

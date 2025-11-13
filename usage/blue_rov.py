@@ -47,10 +47,10 @@ class Params:
                             [-0.1888, 0.1888, 0.1888, -0.1888, 0.0, 0.0, 0.0, 0.0]])
     
     # force coefficient matrix
-    f_K_diag = np.array([1, 1, 1, 1, 1, 1])
-    T_db = np.array([0, 0, 0, 0, 0, 0])
-    B_eps = np.array([3])
-    W_B_bias  = np.array([0.0]) # weight and buoyancy bias.
+    # f_K_diag = np.array([1, 1, 1, 1, 1, 1])
+    # T_db = np.array([0, 0, 0, 0, 0, 0])
+    # B_eps = np.array([3])
+    # W_B_bias  = np.array([0.0]) # weight and buoyancy bias.
     ### Parameters in rigid body dynamics and restoring forces
     # Based on BlueRobotics 2018b technical specs. 
     # Based on Table 5.1
@@ -129,7 +129,7 @@ class Params:
     kd = np.array([2, 2, 2, 2, 2, 2])
     
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
-                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, W_B_bias, B_eps, f_K_diag, T_db, v_flow))
+                                           rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, v_flow))
     
 
     # https://gist.github.com/edxmorgan/4d38ca349537a36214927f16359848a1
@@ -150,7 +150,7 @@ class Params:
     # ----------------------------
     # Read CSV file and convert thrust from Ibf (lbf) to Newtons (N)
     # ----------------------------
-    csv = pd.read_csv('t200.csv')
+    csv = pd.read_csv('sample_data/t200.csv')
     conversion_factor = 4.44822
     csv['thrust 16V'] = csv['thrust 16V'] * conversion_factor
 
@@ -203,8 +203,9 @@ class Params:
     thrust_bounded = ca.fmax(thrust_output_lb, ca.fmin(thrust_expr, thrust_output_ub))
 
     # Create the forward mapping CasADi function and map it to no_thrusters.
-    pwm_to_thrust = ca.Function('Pwm_to_thrust', [pwm], [thrust_bounded]).map(no_thrusters)
-
+    pwm_to_thrust = ca.Function('pwm_to_thrust', [pwm], [thrust_bounded]).map(no_thrusters)
+    n_pwm = ca.SX.sym('n_pwm',8)
+    pwm_to_thrust_func = ca.Function('pwm_to_thrusts', [n_pwm], [pwm_to_thrust(n_pwm)])
     # ----------------------------
     # Reverse mapping: Thrust -> PWM
     # ----------------------------
@@ -320,3 +321,4 @@ class Params:
     pwm_to_rads = pwm_to_rads_single.map(no_thrusters)
     n_pwm_rad = ca.SX.sym('n_pwm_rad',8)
     pwm_to_rads_func = ca.Function('pwm_to_rads', [n_pwm_rad], [pwm_to_rads(n_pwm_rad)])
+    thrust_to_rads_func = ca.Function('thrusts_to_rads', [n_thrust], [pwm_to_rads_func(thrust_to_pwm(n_thrust))])

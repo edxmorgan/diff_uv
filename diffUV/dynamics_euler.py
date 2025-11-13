@@ -17,14 +17,15 @@ from casadi import inv
 from diffUV.base import Base
 from diffUV.utils.symbols import *
 from diffUV.utils import euler_ops as T_eul
+from diffUV.kinematics import Kinematics
 
 class DynamicsEuler(Base):
     def __init__(self):
         super().__init__()
-        self.J, self.R, self.T = T_eul.J_kin(eul)
-        self.J_INV, self.R_INV, self.T_INV = T_eul.inv_J_kin(eul)
-        self.J_INV_T = self.J_INV.T
-        self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
+        self.kin = Kinematics()
+        self.J_INV_T = self.kin.J_INV.T
+        self.J_INV = self.kin.J_INV
+        self.J_dot = self.kin.J_dot
 
     def __repr__(self) -> str:
         """Euler representation of the Dynamics instance  in ned frame"""

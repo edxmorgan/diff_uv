@@ -161,5 +161,4 @@ cython_debug/
 *.c
 *.cpp
 *.casadi
-sshur.ipynb
 *.txt

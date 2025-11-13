@@ -1,1 +1,5 @@
 *.ipynb linguist-detectable=false
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.casadi filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.npy filter=lfs diff=lfs merge=lfs -text

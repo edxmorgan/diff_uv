@@ -2,7 +2,7 @@
 A differentiable Underwater vehicles dynamic model in 6 DOFs based on casadi operations.
 
 <!-- ![alt text]() -->
-<img src="./images/git.png" width="840"/>
+<img src="./docs/image.png" width="840"/>
 
 This library provides capabilities to retrieve symbolic representations of kinematics and dynamics of an underwater vehicle.
 This makes it possible to solve for gradients, hessians and jacobians using [casadi](https://web.casadi.org/). 
@@ -57,7 +57,21 @@ dampn_mat = uv_dyn.body_damping_matrix()
 
 v_dot = uv_dyn.body_forward_dynamics()
 ```
-For detailed usage examples of the Diff_UV, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage).
+
+## Todo/Implementation status
+- [x] [Kinematics model]()
+- [x] [forward dynamics]()
+- [x] [simulation]()
+- [x] [inverse dynamics (Lagrange–Euler)]()
+- [ ] [energy and Lagrangian Terms]()
+- [x] [system Identification helpers (energy-based regressors)]()
+- [x] [extended kalman filter]()
+- [x] [nonlinear pid controller]()
+- [x] [jit support]()
+- [ ] [gpu support]()
+- [x] [c++ code generation]()
+
+For usage examples of the Diff_UV, see [Jupyter notebook](https://github.com/edxmorgan/Diff_UV/blob/main/usage).
 
 ### Extending with CasADi Capabilities
 All expressions obtained from the diffUV methods are of CasADi type. This allows them to be integrated with CasADi's advanced functionalities for optimization, symbolic computations, and numerical integrations.

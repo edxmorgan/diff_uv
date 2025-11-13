@@ -24,7 +24,10 @@ class Kinematics():
     def __init__(self):
         self.J, self.R, self.T = T_eul.J_kin(eul)
         self.J_INV, self.R_INV, self.T_INV = T_eul.inv_J_kin(eul)
-        self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,deul,dT_sp,eul_sp,w_nb)
+        
+        _n_dot     = self.ned_euler_vel_from_body()
+        _deul      = _n_dot[3:6]           # Euler rates
+        self.J_dot, self.dR, self.dT = T_eul.J_dot(eul,_deul,dT_sp,eul_sp,w_nb)
 
         self.Jq, self.Rq, self.Tq = T_quat.Jq_kin(uq)
         self.Jq_INV, _,_ = T_quat.inv_Jq_kin(uq)

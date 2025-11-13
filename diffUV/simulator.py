@@ -33,14 +33,12 @@ class Simulator():
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
-
-
+    
     def model(self, rot_type='euler'):
         ode_p = ca.vertcat(sim_p, dt, f_ext)
+        xdd = self.uv_body.body_forward_dynamics()
         if rot_type == 'quat':
             xd = self.Jq_@x_nb
-            xdd = self.uv_body.body_forward_dynamics()
-
             rhs = vertcat(xd, xdd) #the complete ODE vector
             f_rhs = ca.Function('Odefunc', [m, W, B, r_g, r_b, I_o,
                                     decoupled_added_m, coupled_added_m,
@@ -67,10 +65,7 @@ class Simulator():
             x_next[3:7] = x_next[3:7]/ca.sqrt(x_next[3:7].T@x_next[3:7])  #quaternions requires normalization
         else:
             xd = self.J_@x_nb
-            xdd = self.uv_body.body_forward_dynamics()
-
             ode = vertcat(xd, xdd) #the complete ODE vector
-
             xS0 = vertcat(n, x_nb) #states
 
             # integrator to discretize the system

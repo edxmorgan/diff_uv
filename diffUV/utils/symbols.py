@@ -40,9 +40,9 @@ dw_nb = vertcat(dp, dq, dr)
 x_nb = vertcat(v_nb, w_nb) # body-fixed velocity 
 dx_nb = vertcat(dv_nb, dw_nb) # body-fixed accel.
 
-# width of the W and B transition zone
-B_eps = SX.sym('B_eps')
-W_B_bias = SX.sym('W_B_bias')
+# # width of the W and B transition zone
+# B_eps = SX.sym('B_eps')
+# W_B_bias = SX.sym('W_B_bias')
 
 # From Eq. 6.1. Irrotational ocean currents. 
  # Current/flow velocity
@@ -93,20 +93,20 @@ dpsi = SX.sym('dpsi')
 ddpsi = SX.sym('ddpsi')
 
 eul = vertcat(phi, thet, psi)  # NED euler angular velocity
-deul = vertcat(dphi, dthet, dpsi)
-ddeul = vertcat(ddphi, ddthet, ddpsi)
+# deul = vertcat(dphi, dthet, dpsi)
+# ddeul = vertcat(ddphi, ddthet, ddpsi)
 
 n = vertcat(p_n, eul)
-dn  = vertcat(dp_n, deul)
-ddn  = vertcat(ddp_n, ddeul)
+# dn  = vertcat(dp_n, deul)
+# ddn  = vertcat(ddp_n, ddeul)
 
 eta,eps1,eps2,eps3 = SX.sym('eta'),SX.sym('eps1'),SX.sym('eps2'),SX.sym('eps3')
 d_eta,d_eps1,d_eps2,d_eps3 = SX.sym('deta'),SX.sym('deps1'),SX.sym('deps2'),SX.sym('deps3')
 dd_eta,dd_eps1,dd_eps2,dd_eps3 = SX.sym('ddeta'),SX.sym('ddeps1'),SX.sym('ddeps2'),SX.sym('ddeps3')
 
 uq = vertcat(eta,eps1,eps2,eps3) #unit quaternion
-duq = vertcat(d_eta,d_eps1,d_eps2,d_eps3) #first derivative unit quaternion
-dduq = vertcat(dd_eta,dd_eps1,dd_eps2,dd_eps3) #second derivative unit quaternion
+# duq = vertcat(d_eta,d_eps1,d_eps2,d_eps3) #first derivative unit quaternion
+# dduq = vertcat(dd_eta,dd_eps1,dd_eps2,dd_eps3) #second derivative unit quaternion
 
 # deta = -0.5*(eps1*p + eps2*q + eps3*r)
 # deps1 = 0.5*(eta*p - eps3*q + eps2*r)
@@ -115,8 +115,8 @@ dduq = vertcat(dd_eta,dd_eps1,dd_eps2,dd_eps3) #second derivative unit quaternio
 # duq = vertcat(deta,deps1,deps2,deps3) # differential unit quaternion
 
 nq = vertcat(p_n, uq)
-dnq = vertcat(dp_n, duq)
-ddnq = vertcat(ddp_n, dduq)
+# dnq = vertcat(dp_n, duq)
+# ddnq = vertcat(ddp_n, dduq)
 ###################################################
 
 
@@ -233,10 +233,6 @@ N_rr = SX.sym('N_rr') # quadratic Drag coefficient in yaw
 ###################################################################
 tau_b = SX.sym('tau_b',6,1) #body generalized forces and torque
 thru_u = SX.sym('thruForces',8,1) #thruster inputs
-
-f_K = SX.sym('f_K',6,1) #force coefficients
-f_K_diag = diag(f_K) #force coefficients matrix
-T_db = SX.sym('T_db', 6,1) #torque deadband
 Tc = SX.sym('T',6,8) #thruster configuration
 
 ###################################################################
@@ -274,7 +270,7 @@ quadratic_dc = vertcat(X_uu, Y_vv, Z_ww, K_pp, M_qq, N_rr) # quadratic damping c
 
 sim_p = vertcat(m, W, B, r_g, r_b, I_o,
                         decoupled_added_m, coupled_added_m,
-                        linear_dc, quadratic_dc, W_B_bias, B_eps, f_K, T_db, v_c)
+                        linear_dc, quadratic_dc, v_c)
 
 
 
