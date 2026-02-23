@@ -23,12 +23,12 @@ from diffUV.utils import euler_ops as T_eul
 from diffUV.utils.operators import coriolis_lag_param 
 
 class Controller():
-    def __init__(self):
+    def __init__(self, uv_body: dyn_body = None):
         # ned kinematic transformation
         Kinematics = kin()
         self.J_ = Kinematics.J
         # body representaion
-        uv_body = dyn_body()
+        uv_body =  uv_body if uv_body is not None else dyn_body()
         mB = uv_body.surface_interaction(z, W, B, B_eps=3.0)
         self.gn = uv_body.body_restoring_vector(mB)
 
