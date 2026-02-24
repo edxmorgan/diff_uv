@@ -23,13 +23,13 @@ from diffUV.utils.quaternion_ops import q2euler
 import casadi as ca
 
 class Simulator():
-    def __init__(self):
+    def __init__(self, uv_body: dyn_body = None):
         # ned kinematic transformation
         Kinematics = kin()
         self.Jq_ = Kinematics.Jq
         self.J_ = Kinematics.J
         # body representaion
-        self.uv_body = dyn_body()
+        self.uv_body = uv_body if uv_body is not None else dyn_body()
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
