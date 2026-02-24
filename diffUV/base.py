@@ -49,6 +49,7 @@ class Base(object):
         self.body_state_vector = x_nb
         self.J, self.R, self.T = T_eul.J_kin(eul)
         self.v_rdot, self.v_cdot = T_eul.rel_acc(dx_nb, w_nb, v_c)
+        self.lumped_params = SX.sym('lumped_params', 27)
     
     def _initialize_mass_rb(self):
         # ASSUMPTIONS. Ixy = Iyz = 0. yg = 0. 
@@ -169,8 +170,7 @@ class Base(object):
     def build_sys_regressor(self):
         # β = [m-X_du, m-Y_dv, m-Z_dw, m*z_g-X_dq, -m*z_g+Y_dp,
         #      -m*z_g+K_dv, m*z_g-M_du, I_x-K_dp, I_y-M_dq, I_z-N_dr , W, B, x_g*W - x_b*B, y_g*W - y_b*B , z_g*W - z_b*B, X_u,Y_v,Z_w,K_p,M_q,N_r, X_uu,Y_vv,Z_ww,K_pp,M_qq,N_rr]
-    
-        lumped_params = SX.sym('lumped_params', 27)
+        lumped_params = self.lumped_params 
         (m_X_du, m_Y_dv, m_Z_dw, mz_g_X_dq, _mz_g_Y_dp, _mz_g_K_dv, mz_g_M_du, I_x_K_dp, I_y_M_dq, I_z_N_dr, 
          W_, B_, x_gW_x_bB, y_gW_y_bB , z_gW_z_bB, 
          X_u_,Y_v_,Z_w_,K_p_,M_q_,N_r_, X_uu_,Y_vv_,Z_ww_,K_pp_,M_qq_,N_rr_)  = vertsplit(lumped_params)
