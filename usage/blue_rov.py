@@ -127,7 +127,11 @@ class Params:
     kp = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
     ki = np.array([0, 0, 0, 0, 0, 0])
     kd = np.array([2, 2, 2, 2, 2, 2])
-    
+
+    real_kp = np.array([40.0, 40.0, 40.0, 10, 10, 10.0])
+    real_ki = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    real_kd = np.array([15.0, 15.0, 15.0, 2, 2, 5.0])
+
     sim_params = np.concatenate(( np.array([m]) , np.array([W]), np.array([B]), 
                                            rg, rb, Io, added_m, coupl_added_m, linear_dc, quadratic_dc, v_flow))
     
@@ -138,6 +142,7 @@ class Params:
                                 -3.36082112e+01, -8.94055107e+01, -2.98736214e+00, -1.57921531e+00,
                                 -3.39766499e+00, -1.47912104e-04, -5.16373030e-04, -9.85522538e+01,
                                 -3.05907788e-02, -1.27877517e-01, -1.63514832e+00, 0.0, 0.0 ,0.0, 0.0, 0.0 ,0.0])
+
     # https://gist.github.com/edxmorgan/4d38ca349537a36214927f16359848a1
 
 
