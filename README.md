@@ -1,7 +1,7 @@
 # diffUV
 A differentiable 6-DOF underwater vehicle dynamics, with tooling for system identification, estimation, and control.
 
-<img src="./resources/image.png" width="840"/>
+<img src="./resources/diff_uv_flow_diag.png" width="840"/>
 
 <p align="center">
   <img src="./resources/dynamic_auv.gif" width="48%" alt="dynamic motions" />
