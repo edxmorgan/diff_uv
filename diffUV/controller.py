@@ -19,6 +19,7 @@ from diffUV.kinematics import Kinematics as kin
 from diffUV.base import Base as dyn_body
 from diffUV.utils.symbols import *
 import casadi as ca
+from diffUV.utils.rotation_error import rotation_log
 from diffUV.utils import euler_ops as T_eul
 from diffUV.utils.operators import coriolis_lag_param 
 
@@ -58,51 +59,34 @@ class Controller():
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
     
+    def geometric_reference(self):
+        """World position/rotation-vector errors; physical body twist inputs."""
+        R = T_eul.linear_vel_R(eul)
+        Rd = T_eul.linear_vel_R(nd[3:6])
+        G = ca.diagcat(R, R)
+        Gd = ca.diagcat(Rd, Rd)
+        error = ca.vertcat(nd[:3]-n[:3], R @ rotation_log(R.T @ Rd))
+        integral = sum_e_buffer + error*dt
+        return R, Rd, G, Gd, error, integral
+
     def position_pid(self):
-        ne = nd - n
+        _, _, G, Gd, error, integral = self.geometric_reference()
+        feedback = diag(Kp)@error + diag(Ki)@integral + diag(Kd)@(Gd@xb_d-G@x_nb)
+        return self.gn + G.T@feedback, integral
 
-        eul_d = nd[3:6]
-        J_d, _, _ = T_eul.J_kin(eul_d)
-
-        i_buffer = sum_e_buffer + ne*dt
-
-        pid = diag(Kp)@ne + diag(Ki)@i_buffer + diag(Kd)@(J_d@xb_d - self.J_@x_nb)
-
-        pid_controller = self.gn + self.J_.T@pid
-
-        return pid_controller, i_buffer
-    
     def position_pid_reg(self):
-        ne = nd - n
+        _, _, G, Gd, error, integral = self.geometric_reference()
+        feedback = diag(Kp)@error + diag(Ki)@integral + diag(Kd)@(Gd@xb_d-G@x_nb)
+        return self.gn_Y + G.T@feedback, integral
 
-        eul_d = nd[3:6]
-        J_d, _, _ = T_eul.J_kin(eul_d)
-        
-        i_buffer = sum_e_buffer + ne*dt
-
-        pid = diag(Kp)@ne + diag(Ki)@i_buffer + diag(Kd)@(J_d@xb_d - self.J_@x_nb)
-
-        pid_controller = self.gn_Y + self.J_.T@pid
-
-        return pid_controller, i_buffer
-    
-    
     def trajectorytracking_pid(self):
-        #trajectorytracking using inverse dynamics computed torque
-        ne = nd - n
-
-        inv_J ,RT ,inv_T = T_eul.inv_J_kin(eul)
-        
-        i_buffer = sum_e_buffer + ne*dt
-
-        desired_vel_fb = inv_J@(diag(Kp)@ne + diag(Ki)@i_buffer)
-        
-        v_ref_b = xb_d + desired_vel_fb
-        v_err_b = v_ref_b - x_nb
-        tracking_acc = des_acc_b + diag(Kd) @ v_err_b
-
-        tracking_u = (self.inertia_mat_id @ tracking_acc
-                  + self.C_id @ v_r
-                  + self.gn_Y)
-        
-        return tracking_u, i_buffer
+        R, Rd, G, _, error, integral = self.geometric_reference()
+        A = R.T @ Rd
+        Adot = -ca.skew(x_nb[3:6])@A + A@ca.skew(xb_d[3:6])
+        transport = ca.diagcat(A, A)
+        # Reference body-component derivatives transported to the current body.
+        acceleration = transport@des_acc_b + ca.diagcat(Adot, Adot)@xb_d
+        velocity = transport@xb_d + G.T@(diag(Kp)@error + diag(Ki)@integral)
+        tracking_acc = acceleration + diag(Kd)@(velocity-x_nb)
+        tracking_u = self.inertia_mat_id@tracking_acc + self.C_id@v_r + self.gn_Y
+        return tracking_u, integral
