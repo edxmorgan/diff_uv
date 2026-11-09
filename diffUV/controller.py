@@ -51,10 +51,10 @@ class Controller():
         self.inertia_mat_id[4,4] = I_y_M_dq
         self.inertia_mat_id[5,5] = I_z_N_dr
 
+        self.D_id = body_damping_matrix_id
         self.C_id = coriolis_lag_param(self.inertia_mat_id, v_r)
 
-        mB_ = uv_body.surface_interaction(z, W_, B_, B_eps=3.0)
-        self.gn_Y = YG@vertcat(W_, mB_, x_gW_x_bB, y_gW_y_bB , z_gW_z_bB)
+        self.gn_Y = uv_body.surface_restoring_reg()
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} Simulator'
@@ -69,15 +69,25 @@ class Controller():
         integral = sum_e_buffer + error*dt
         return R, Rd, G, Gd, error, integral
 
+    def _pid_body_wrench_feedback(self):
+        R, Rd, _, _, error, integral = self.geometric_reference()
+        A = R.T@Rd
+        # World-position gains, body-axis angular gains. Integrator storage
+        # remains in world axes and is transported before angular gains act.
+        force = R.T@(diag(Kp[:3])@error[:3] + diag(Ki[:3])@integral[:3]
+                     + diag(Kd[:3])@(Rd@xb_d[:3]-R@x_nb[:3]))
+        torque = (diag(Kp[3:])@rotation_log(A)
+                  + diag(Ki[3:])@(R.T@integral[3:])
+                  + diag(Kd[3:])@(A@xb_d[3:]-x_nb[3:]))
+        return ca.vertcat(force, torque), integral
+
     def position_pid(self):
-        _, _, G, Gd, error, integral = self.geometric_reference()
-        feedback = diag(Kp)@error + diag(Ki)@integral + diag(Kd)@(Gd@xb_d-G@x_nb)
-        return self.gn + G.T@feedback, integral
+        feedback, integral = self._pid_body_wrench_feedback()
+        return self.gn + feedback, integral
 
     def position_pid_reg(self):
-        _, _, G, Gd, error, integral = self.geometric_reference()
-        feedback = diag(Kp)@error + diag(Ki)@integral + diag(Kd)@(Gd@xb_d-G@x_nb)
-        return self.gn_Y + G.T@feedback, integral
+        feedback, integral = self._pid_body_wrench_feedback()
+        return self.gn_Y + feedback, integral
 
     def trajectorytracking_pid(self):
         R, Rd, G, _, error, integral = self.geometric_reference()
@@ -86,7 +96,58 @@ class Controller():
         transport = ca.diagcat(A, A)
         # Reference body-component derivatives transported to the current body.
         acceleration = transport@des_acc_b + ca.diagcat(Adot, Adot)@xb_d
-        velocity = transport@xb_d + G.T@(diag(Kp)@error + diag(Ki)@integral)
+        # Translation gains retain their world-position convention. Attitude
+        # gains describe physical vehicle roll/pitch/yaw axes: apply them AFTER
+        # rotating the error into the body. Applying unequal angular gains in
+        # world axes makes pitch stiffness change when the vehicle yaws.
+        feedback = ca.vertcat(
+            R.T@(diag(Kp[:3])@error[:3] + diag(Ki[:3])@integral[:3]),
+            diag(Kp[3:])@rotation_log(A) + diag(Ki[3:])@(R.T@integral[3:]))
+        velocity = transport@xb_d + feedback
         tracking_acc = acceleration + diag(Kd)@(velocity-x_nb)
-        tracking_u = self.inertia_mat_id@tracking_acc + self.C_id@v_r + self.gn_Y
+        # Invert the complete nominal plant bias. Omitting drag leaves
+        # -M^-1 D(v_r)v_r in the tracking acceleration; off-diagonal inertia
+        # then turns a translational drag residual into angular acceleration.
+        tracking_u = (self.inertia_mat_id@tracking_acc + self.C_id@v_r
+                      + self.D_id@v_r + self.gn_Y)
         return tracking_u, integral
+
+    def sliding_mode(self, surface_gain, damping_gain, switching_gain, boundary):
+        """Constant-M, zero-current vehicle SMC, body FRD wrench output.
+
+        Inputs: positive surface gains [1/s], nonnegative damping gains
+        [N/(m/s), Nm/(rad/s)], switching gains [N, Nm], and boundary widths
+        [m/s, rad/s]. Zero width selects ideal sign switching. Positive widths
+        select saturation (practical boundary-layer convergence, not exact sliding).
+        nd is desired NED pose; xb_d and des_acc_b are desired-body twist and its
+        component time derivative. Orientation uses the shortest SO(3) logarithm;
+        its unavoidable half-turn branch cut is excluded from the smooth proof.
+        No disturbance truth or estimated disturbance is required.
+        """
+        R = T_eul.linear_vel_R(eul)
+        Rd = T_eul.linear_vel_R(nd[3:6])
+        A = R.T @ Rd
+        Adot = -ca.skew(x_nb[3:6]) @ A + A @ ca.skew(xb_d[3:6])
+        transport = ca.diagcat(A, A)
+        ep = R.T @ (nd[:3]-n[:3])
+        er = rotation_log(A)
+        # Directional derivative on SO(3), without treating body angular rates
+        # as Euler rates or approximating the rotation-vector derivative.
+        rotation = ca.SX.sym('smc_rotation', 3, 3)
+        tangent = ca.SX.sym('smc_tangent', 3, 3)
+        log_rate = ca.Function('smc_log_rate', [rotation, tangent],
+            [ca.jacobian(rotation_log(rotation), ca.vec(rotation)) @ ca.vec(tangent)])
+        error = ca.vertcat(ep, er)
+        error_rate = ca.vertcat(-ca.skew(x_nb[3:6]) @ ep
+            + A @ xb_d[:3]-x_nb[:3], log_rate(A, Adot))
+        reference = transport @ xb_d + surface_gain*error
+        reference_rate = (transport @ des_acc_b
+            + ca.diagcat(Adot, Adot) @ xb_d + surface_gain*error_rate)
+        sliding = x_nb-reference
+        saturation = ca.fmin(1, ca.fmax(-1, sliding/ca.fmax(boundary, 1e-15)))
+        switching = ca.if_else(boundary > 0, saturation, ca.sign(sliding))
+        bias = ca.substitute(self.C_id @ v_r + self.D_id @ v_r + self.gn_Y,
+                             v_c, ca.SX.zeros(6))
+        wrench = (self.inertia_mat_id @ reference_rate + bias
+                  - damping_gain*sliding - switching_gain*switching)
+        return wrench, sliding, error

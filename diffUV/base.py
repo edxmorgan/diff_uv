@@ -36,7 +36,10 @@ class Base(object):
     def __repr__(self) -> str:
         return "differentiable underwater dynamics"
 
-    def __init__(self, func_opts=None, use_jit=True):
+    def __init__(self, func_opts=None, use_jit=True, *, artificial_surface_support=False):
+        if not isinstance(artificial_surface_support, bool):
+            raise TypeError("artificial_surface_support must be a bool")
+        self.artificial_surface_support = artificial_surface_support
         if func_opts:
             self.func_opts = func_opts
         if use_jit:
@@ -97,16 +100,17 @@ class Base(object):
         return g
 
     def surface_interaction(self, z, W, B, B_eps):
-        # When the object is just above the water surface (0 <= z < eps),
-        # B_dynamic linearly interpolates between W (at z=0) and B (at z=eps).
-        B_dynamic = if_else(z < B_eps, W + (B - W) * (z / B_eps), B)
+        """Buoyancy law selected when constructing the model.
 
-        # Use the original structure:
-        #   - If z == 0, set mB to the (dynamic) W value (which is just W).
-        #   - If z < 0, then mB is 0.
-        #   - Otherwise (z > 0), use the smooth dynamic value B_dynamic.
-        mB = if_else(z == 0.0, W, if_else(z < 0.0, 0.0, B_dynamic))
-        return mB
+        Default: constant displaced-volume force for a fully submerged vehicle.
+        Opt-in: historical artificial support, with zero buoyancy above the
+        datum and a W-to-B ramp over B_eps below it. This is a simulation aid,
+        not a partial-immersion model; it is discontinuous at depth zero.
+        """
+        if self.artificial_surface_support:
+            ramp = if_else(z < B_eps, W + (B-W)*(z/B_eps), B)
+            return if_else(z == 0.0, W, if_else(z < 0.0, 0.0, ramp))
+        return B
 
 
     def body_restoring_vector_jacobian_wrt_params(self):
@@ -210,17 +214,34 @@ class Base(object):
         Y = horzcat(YMC, YG, YD)
         return Y , YMC, YG, YD, lumped_params, inertia_mat_id, C_id, g_id, body_damping_matrix_id
         
+    def surface_restoring_reg(self):
+        """Selected restoring force shared by plant and controller exports.
+
+        Historical name retained for serialized-function compatibility.
+        Uses this model's own weight, buoyancy and combined restoring moments.
+        """
+        p = self.lumped_params
+        buoyancy = self.surface_interaction(z, p[10], p[11], B_eps=3.0)
+        return self.body_restoring_vector_jacobian_wrt_params() @ vertcat(
+            p[10], buoyancy, p[12:15])
+
+    def identification_regressor(self):
+        """Inverse-dynamics regressor for the selected lumped plant.
+
+        Y(theta-independent) @ theta = tau_b + f_ext. Uses the same
+        inertia, relative acceleration, damping and restoring force as the
+        forward model. Depth dependence follows the selected surface-support option.
+        """
+        _, _, _, _, p, M, C, _, D = self.build_sys_regressor()
+        required_wrench = M @ self.v_rdot + C @ v_r + D @ v_r + self.surface_restoring_reg()
+        return jacobian(required_wrench, p)
+
     def body_forward_dynamics_reg(self):
         """
         Calculate body accelerations based on inverse dynamics based on regressor lump parameter.
         """
         Y , YMC, YG, YD, lumped_params, inertia_mat_id, C_id, g_id, body_damping_matrix_id = self.build_sys_regressor()
-        (m_X_du, m_Y_dv, m_Z_dw, mz_g_X_dq, _mz_g_Y_dp, _mz_g_K_dv, mz_g_M_du, I_x_K_dp, I_y_M_dq, I_z_N_dr, 
-         W_, B_, x_gW_x_bB, y_gW_y_bB , z_gW_z_bB, 
-         X_u_,Y_v_,Z_w_,K_p_,M_q_,N_r_, X_uu_,Y_vv_,Z_ww_,K_pp_,M_qq_,N_rr_)  = vertsplit(lumped_params)
-        
-        mB = self.surface_interaction(z, W_, B_, B_eps=3.0)
-        g_id_z_lock = YG@vertcat(W_, mB, x_gW_x_bB, y_gW_y_bB , z_gW_z_bB,)
+        g_id_z_lock = self.surface_restoring_reg()
         
         acc = inv(inertia_mat_id)@(tau_b + f_ext - C_id@v_r - body_damping_matrix_id@v_r - g_id_z_lock)
         return acc, lumped_params
